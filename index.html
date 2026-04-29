@@ -6,8 +6,8 @@
 <title>Cook Medical: Workforce Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WPQ=" crossorigin=""></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -152,7 +152,7 @@ button{font-family:inherit;cursor:pointer;}
 .mcard-stat strong.pos{color:var(--green);}
 .mcard-stat strong em{font-style:normal;font-size:9.5px;color:var(--text-subtle);margin-left:3px;}
 .mcard-spacer{flex:1;}
-.mcard-impl{margin:0 20px 0;padding:12px 14px;background:#111;color:#fafafa;flex-shrink:0;}
+.mcard-impl{margin:0 20px 16px;padding:12px 14px;background:#111;color:#fafafa;flex-shrink:0;}
 .mcard-impl-label{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:4px;}
 .mcard-impl-text{font-size:12.5px;font-weight:500;line-height:1.4;}
 .mcard-ft{padding:12px 20px;background:var(--bg);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:nowrap;flex-shrink:0;min-height:44px;}
@@ -306,7 +306,7 @@ button{font-family:inherit;cursor:pointer;}
 .housing-map-city{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;}
 .housing-map-dist{font-size:11px;color:var(--text-muted);}
 .housing-map-frame{background:var(--surface);display:flex;flex-direction:column;}
-.housing-map-frame .lmap{flex:1;min-height:260px;width:100%;}
+.housing-map-frame .lmap{flex:1;min-height:300px;height:300px;width:100%;}
 .housing-map-caption{padding:8px 12px;background:var(--surface-low);border-top:1px solid var(--border);font-size:10.5px;color:var(--text-subtle);}
 
 /* FINDINGS */
@@ -763,7 +763,7 @@ button{font-family:inherit;cursor:pointer;}
               <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">Columbus, IN</div><div class="housing-map-dist">~40 mi east · Cummins labor market</div></div></div>
             </div>
             <div class="housing-map-frame">
-              <div id="map-bloom" class="lmap"></div>
+              <div id="map-bloom" class="lmap" style="height:300px;min-height:300px;"></div>
               <div class="housing-map-caption">OpenStreetMap · Monroe and Owen Counties, IN · Cook sites: Bloomington, Ellettsville, Spencer</div>
             </div>
           </div>
@@ -787,7 +787,7 @@ button{font-family:inherit;cursor:pointer;}
               <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">Charlotte</div><div class="housing-map-dist">~80 mi south · Regional economic anchor</div></div></div>
             </div>
             <div class="housing-map-frame">
-              <div id="map-ws" class="lmap"></div>
+              <div id="map-ws" class="lmap" style="height:300px;min-height:300px;"></div>
               <div class="housing-map-caption">OpenStreetMap · Forsyth, Davidson, Davie, Stokes, and Yadkin Counties, NC · Cook site: Winston-Salem</div>
             </div>
           </div>
@@ -811,7 +811,7 @@ button{font-family:inherit;cursor:pointer;}
               <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">Macomb</div><div class="housing-map-dist">~30 mi southwest · Western Illinois University</div></div></div>
             </div>
             <div class="housing-map-frame">
-              <div id="map-canton" class="lmap"></div>
+              <div id="map-canton" class="lmap" style="height:300px;min-height:300px;"></div>
               <div class="housing-map-caption">OpenStreetMap · Peoria MSA including Fulton County, IL · Cook site: Canton · Caterpillar complex: East Peoria and Mossville</div>
             </div>
           </div>
@@ -1175,19 +1175,29 @@ window.showToast = function(msg) {
 /* ---- LEAFLET MAPS ---- */
 var mapsInit={};
 function mkIcon(color,r){
-  return L.divIcon({className:'',html:'<div style="width:'+(r*2)+'px;height:'+(r*2)+'px;border-radius:50%;background:'+color+';border:2.5px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.4);"></div>',iconSize:[r*2,r*2],iconAnchor:[r,r],popupAnchor:[0,-(r+4)]});
+  return L.divIcon({className:'',html:'<div style="width:'+(r*2)+'px;height:'+(r*2)+'px;border-radius:50%;background:'+color+';border:2.5px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.38);"></div>',iconSize:[r*2,r*2],iconAnchor:[r,r],popupAnchor:[0,-(r+4)]});
 }
 function initMap(id,lat,lng,zoom,markers){
   if(mapsInit[id])return;
+  if(typeof L==='undefined'){setTimeout(function(){initMap(id,lat,lng,zoom,markers);},300);return;}
   var el=document.getElementById(id);
-  if(!el||el.offsetParent===null)return;
+  if(!el)return;
+  /* ensure the container has a measured height before Leaflet touches it */
+  if(el.offsetHeight<10){setTimeout(function(){initMap(id,lat,lng,zoom,markers);},200);return;}
   mapsInit[id]=true;
-  var map=L.map(id,{scrollWheelZoom:false}).setView([lat,lng],zoom);
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:13}).addTo(map);
-  markers.forEach(function(m){
-    L.marker([m.lat,m.lng],{icon:mkIcon(m.color,m.r)}).addTo(map).bindPopup('<b style="font-size:12px;">'+m.label+'</b><br><span style="font-size:11px;color:#555;">'+m.sub+'</span>');
-  });
-  setTimeout(function(){map.invalidateSize();},120);
+  try{
+    var map=L.map(id,{scrollWheelZoom:false,zoomControl:true}).setView([lat,lng],zoom);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      subdomains:'abc',maxZoom:14
+    }).addTo(map);
+    markers.forEach(function(m){
+      L.marker([m.lat,m.lng],{icon:mkIcon(m.color,m.r)})
+       .addTo(map)
+       .bindPopup('<b style="font-size:12px;font-family:Inter,sans-serif;">'+m.label+'</b><br><span style="font-size:11px;color:#555;font-family:Inter,sans-serif;">'+m.sub+'</span>');
+    });
+    setTimeout(function(){map.invalidateSize();},150);
+  }catch(e){console.warn('Map init error:',e);}
 }
 var BLOOM_MARKERS=[
   {lat:39.1637,lng:-86.5264,color:'#8b0000',r:8,label:'Bloomington, IN',sub:'Cook primary site · Monroe County'},
@@ -1214,13 +1224,11 @@ var CANTON_MARKERS=[
   {lat:40.8081,lng:-89.6437,color:'#888',r:4,label:'Pekin',sub:'~35 mi northeast · Tazewell County'}
 ];
 function tryInitMaps(){
-  if(document.getElementById('pg-housing').classList.contains('active')){
-    var active=document.querySelector('#housing-tabs .mktab-panel.active');
-    if(!active)return;
-    if(active.dataset.market==='bloom')initMap('map-bloom',39.24,-86.70,10,BLOOM_MARKERS);
-    if(active.dataset.market==='ws')initMap('map-ws',36.12,-80.10,10,WS_MARKERS);
-    if(active.dataset.market==='canton')initMap('map-canton',40.62,-89.82,9,CANTON_MARKERS);
-  }
+  var active=document.querySelector('#housing-tabs .mktab-panel.active');
+  if(!active)return;
+  if(active.dataset.market==='bloom')initMap('map-bloom',39.24,-86.70,10,BLOOM_MARKERS);
+  if(active.dataset.market==='ws')initMap('map-ws',36.12,-80.10,10,WS_MARKERS);
+  if(active.dataset.market==='canton')initMap('map-canton',40.62,-89.82,9,CANTON_MARKERS);
 }
 var _origSwitchTab=window.switchTab;
 window.switchTab=function(cid,market,btn){
