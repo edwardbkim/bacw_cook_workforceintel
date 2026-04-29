@@ -6,6 +6,8 @@
 <title>Cook Medical: Workforce Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WPQ=" crossorigin=""></script>
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -295,16 +297,16 @@ button{font-family:inherit;cursor:pointer;}
 .data-footer-text strong{font-weight:700;}
 
 /* HOUSING MAP SECTION */
-.housing-map-wrap{margin-top:16px;border:1px solid var(--border);display:grid;grid-template-columns:260px 1fr;background:var(--border);gap:1px;}
-.housing-map-sidebar{background:var(--surface);padding:20px;}
+.housing-map-wrap{margin-top:16px;border:1px solid var(--border);display:grid;grid-template-columns:260px 1fr;background:var(--border);gap:1px;align-items:stretch;}
+.housing-map-sidebar{background:var(--surface);padding:20px;display:flex;flex-direction:column;}
 .housing-map-label{font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-subtle);margin-bottom:14px;}
 .housing-map-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);}
 .housing-map-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
 .housing-map-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
 .housing-map-city{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;}
 .housing-map-dist{font-size:11px;color:var(--text-muted);}
-.housing-map-frame{background:var(--surface);}
-.housing-map-frame iframe{display:block;width:100%;height:280px;border:none;}
+.housing-map-frame{background:var(--surface);display:flex;flex-direction:column;}
+.housing-map-frame .lmap{flex:1;min-height:260px;width:100%;}
 .housing-map-caption{padding:8px 12px;background:var(--surface-low);border-top:1px solid var(--border);font-size:10.5px;color:var(--text-subtle);}
 
 /* FINDINGS */
@@ -761,7 +763,7 @@ button{font-family:inherit;cursor:pointer;}
               <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">Columbus, IN</div><div class="housing-map-dist">~40 mi east · Cummins labor market</div></div></div>
             </div>
             <div class="housing-map-frame">
-              <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-87.3%2C38.85%2C-86.05%2C39.55&layer=mapnik&marker=39.1637%2C-86.5264" title="Bloomington IN MSA Map" loading="lazy" allowfullscreen></iframe>
+              <div id="map-bloom" class="lmap"></div>
               <div class="housing-map-caption">OpenStreetMap · Monroe and Owen Counties, IN · Cook sites: Bloomington, Ellettsville, Spencer</div>
             </div>
           </div>
@@ -785,7 +787,7 @@ button{font-family:inherit;cursor:pointer;}
               <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">Charlotte</div><div class="housing-map-dist">~80 mi south · Regional economic anchor</div></div></div>
             </div>
             <div class="housing-map-frame">
-              <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-81.0%2C35.85%2C-79.85%2C36.42&layer=mapnik&marker=36.0999%2C-80.2442" title="Winston-Salem NC MSA Map" loading="lazy" allowfullscreen></iframe>
+              <div id="map-ws" class="lmap"></div>
               <div class="housing-map-caption">OpenStreetMap · Forsyth, Davidson, Davie, Stokes, and Yadkin Counties, NC · Cook site: Winston-Salem</div>
             </div>
           </div>
@@ -809,7 +811,7 @@ button{font-family:inherit;cursor:pointer;}
               <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">Macomb</div><div class="housing-map-dist">~30 mi southwest · Western Illinois University</div></div></div>
             </div>
             <div class="housing-map-frame">
-              <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-90.55%2C40.3%2C-89.1%2C41.05&layer=mapnik&marker=40.5581%2C-90.0348" title="Canton IL and Peoria MSA Map" loading="lazy" allowfullscreen></iframe>
+              <div id="map-canton" class="lmap"></div>
               <div class="housing-map-caption">OpenStreetMap · Peoria MSA including Fulton County, IL · Cook site: Canton · Caterpillar complex: East Peoria and Mossville</div>
             </div>
           </div>
@@ -1168,6 +1170,73 @@ window.showToast = function(msg) {
   document.getElementById('toast-msg').textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
+};
+
+/* ---- LEAFLET MAPS ---- */
+var mapsInit={};
+function mkIcon(color,r){
+  return L.divIcon({className:'',html:'<div style="width:'+(r*2)+'px;height:'+(r*2)+'px;border-radius:50%;background:'+color+';border:2.5px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.4);"></div>',iconSize:[r*2,r*2],iconAnchor:[r,r],popupAnchor:[0,-(r+4)]});
+}
+function initMap(id,lat,lng,zoom,markers){
+  if(mapsInit[id])return;
+  var el=document.getElementById(id);
+  if(!el||el.offsetParent===null)return;
+  mapsInit[id]=true;
+  var map=L.map(id,{scrollWheelZoom:false}).setView([lat,lng],zoom);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',maxZoom:13}).addTo(map);
+  markers.forEach(function(m){
+    L.marker([m.lat,m.lng],{icon:mkIcon(m.color,m.r)}).addTo(map).bindPopup('<b style="font-size:12px;">'+m.label+'</b><br><span style="font-size:11px;color:#555;">'+m.sub+'</span>');
+  });
+  setTimeout(function(){map.invalidateSize();},120);
+}
+var BLOOM_MARKERS=[
+  {lat:39.1637,lng:-86.5264,color:'#8b0000',r:8,label:'Bloomington, IN',sub:'Cook primary site · Monroe County'},
+  {lat:39.2331,lng:-86.6289,color:'#1d4ed8',r:6,label:'Ellettsville',sub:'Cook site · Rent gap +$4.98/hr'},
+  {lat:39.2834,lng:-86.7627,color:'#1d4ed8',r:6,label:'Spencer',sub:'Cook site · Rent gap +$6.98/hr'},
+  {lat:39.7684,lng:-86.1581,color:'#888',r:5,label:'Indianapolis',sub:'~50 mi north · Regional labor draw'},
+  {lat:39.2014,lng:-85.9214,color:'#888',r:5,label:'Columbus, IN',sub:'~40 mi east · Cummins labor market'},
+  {lat:38.9717,lng:-86.5264,color:'#888',r:4,label:'Bedford',sub:'~25 mi south · Lawrence County'}
+];
+var WS_MARKERS=[
+  {lat:36.0999,lng:-80.2442,color:'#8b0000',r:8,label:'Winston-Salem, NC',sub:'Cook site · Forsyth County'},
+  {lat:36.0726,lng:-79.7920,color:'#888',r:5,label:'Greensboro',sub:'~27 mi east · Piedmont Triad hub'},
+  {lat:35.9557,lng:-80.0053,color:'#888',r:5,label:'High Point',sub:'~18 mi east · Furniture manufacturing'},
+  {lat:36.0282,lng:-80.3818,color:'#888',r:5,label:'Clemmons',sub:'~8 mi west · Suburban commute corridor'},
+  {lat:36.1010,lng:-80.4607,color:'#888',r:5,label:'Lewisville',sub:'~12 mi west · Suburban corridor'},
+  {lat:36.2168,lng:-80.2767,color:'#888',r:4,label:'Kernersville',sub:'~15 mi northeast'}
+];
+var CANTON_MARKERS=[
+  {lat:40.5581,lng:-90.0348,color:'#8b0000',r:8,label:'Canton, IL',sub:'Cook primary site · Fulton County'},
+  {lat:40.6936,lng:-89.5890,color:'#b45309',r:7,label:'Peoria',sub:'~30 mi NE · Caterpillar HQ · MSA anchor'},
+  {lat:40.6678,lng:-89.5451,color:'#b45309',r:6,label:'East Peoria',sub:'~32 mi NE · Caterpillar manufacturing'},
+  {lat:40.9478,lng:-90.3712,color:'#888',r:5,label:'Galesburg',sub:'~30 mi west · Knox County'},
+  {lat:40.4692,lng:-90.6773,color:'#888',r:5,label:'Macomb',sub:'~30 mi southwest · WIU labor draw'},
+  {lat:40.8081,lng:-89.6437,color:'#888',r:4,label:'Pekin',sub:'~35 mi northeast · Tazewell County'}
+];
+function tryInitMaps(){
+  if(document.getElementById('pg-housing').classList.contains('active')){
+    var active=document.querySelector('#housing-tabs .mktab-panel.active');
+    if(!active)return;
+    if(active.dataset.market==='bloom')initMap('map-bloom',39.24,-86.70,10,BLOOM_MARKERS);
+    if(active.dataset.market==='ws')initMap('map-ws',36.12,-80.10,10,WS_MARKERS);
+    if(active.dataset.market==='canton')initMap('map-canton',40.62,-89.82,9,CANTON_MARKERS);
+  }
+}
+var _origSwitchTab=window.switchTab;
+window.switchTab=function(cid,market,btn){
+  _origSwitchTab(cid,market,btn);
+  if(cid==='housing-tabs'){
+    setTimeout(function(){
+      if(market==='bloom')initMap('map-bloom',39.24,-86.70,10,BLOOM_MARKERS);
+      if(market==='ws')initMap('map-ws',36.12,-80.10,10,WS_MARKERS);
+      if(market==='canton')initMap('map-canton',40.62,-89.82,9,CANTON_MARKERS);
+    },60);
+  }
+};
+var _origShowPage=window.showPage;
+window.showPage=function(pageId,navEl){
+  _origShowPage(pageId,navEl);
+  if(pageId==='pg-housing')setTimeout(tryInitMaps,100);
 };
 
 /* ---- INIT ---- */
