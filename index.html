@@ -1,0 +1,1179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Cook Medical: Workforce Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#f3f3f3; --surface:#ffffff; --surface-low:#f9f9f9;
+  --sidebar:#111111; --sidebar-border:#252525;
+  --primary:#8b0000; --primary-dk:#610000;
+  --text:#1a1c1c; --text-muted:#5f5e5e; --text-subtle:#959595;
+  --border:#e2e2e2; --border-strong:#c5c5c5;
+  --bloom:#1d4ed8; --bloom-lt:#eff6ff; --bloom-bd:#bfdbfe;
+  --ws:#15803d; --ws-lt:#f0fdf4; --ws-bd:#bbf7d0;
+  --canton:#b45309; --canton-lt:#fffbeb; --canton-bd:#fde68a;
+  --red:#ba1a1a; --red-lt:#ffdad6; --red-bd:#ffb4a8;
+  --amber:#d97706; --amber-lt:#fffbeb; --amber-bd:#fde68a;
+  --green:#15803d; --green-lt:#f0fdf4; --green-bd:#bbf7d0;
+  --blue:#1d4ed8; --blue-lt:#eff6ff; --blue-bd:#bfdbfe;
+  --sidebar-w:216px; --topbar-h:54px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;display:flex;height:100vh;overflow:hidden;}
+a{color:var(--primary);text-decoration:none;}
+a:hover{text-decoration:underline;}
+button{font-family:inherit;cursor:pointer;}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--sidebar);display:flex;flex-direction:column;flex-shrink:0;border-right:1px solid var(--sidebar-border);height:100vh;position:fixed;top:0;left:0;z-index:200;transition:transform .25s ease;}
+.sidebar-logo{padding:18px 18px 14px;border-bottom:1px solid var(--sidebar-border);}
+.sidebar-logo-word{font-family:'Newsreader',serif;font-size:13px;font-weight:600;color:#fff;letter-spacing:.5px;margin-bottom:1px;}
+.sidebar-logo-sub{font-size:9px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:rgba(255,255,255,.25);}
+.sidebar-nav{flex:1;padding:10px 0;overflow-y:auto;scrollbar-width:none;}
+.sidebar-nav::-webkit-scrollbar{display:none;}
+.nav-group-label{font-size:9px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:rgba(255,255,255,.2);padding:14px 18px 5px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:12.5px;font-weight:400;color:rgba(255,255,255,.48);cursor:pointer;border:none;background:none;width:100%;text-align:left;border-left:3px solid transparent;transition:color .12s,background .12s;}
+.nav-item svg{width:15px;height:15px;flex-shrink:0;opacity:.5;}
+.nav-item:hover{background:rgba(255,255,255,.04);color:rgba(255,255,255,.75);}
+.nav-item.active{color:#fff;font-weight:600;border-left-color:var(--primary);background:rgba(139,0,0,.18);}
+.nav-item.active svg{opacity:1;}
+.sidebar-bottom{padding:10px 0;border-top:1px solid var(--sidebar-border);}
+.sidebar-meta{padding:10px 18px 6px;font-size:10px;color:rgba(255,255,255,.2);line-height:1.5;}
+
+/* MOBILE OVERLAY */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .sidebar-overlay.open{display:block;}
+  .main{margin-left:0 !important;}
+  .hamburger{display:flex !important;}
+}
+
+/* MAIN */
+.main{margin-left:var(--sidebar-w);flex:1;display:flex;flex-direction:column;height:100vh;min-width:0;}
+
+/* TOPBAR */
+.topbar{height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:12px;flex-shrink:0;position:sticky;top:0;z-index:100;}
+.hamburger{width:32px;height:32px;display:none;align-items:center;justify-content:center;border:1px solid var(--border);background:none;color:var(--text-muted);cursor:pointer;flex-shrink:0;}
+.hamburger svg{width:16px;height:16px;}
+.topbar-title{font-family:'Newsreader',serif;font-size:15px;font-weight:500;color:var(--text);white-space:nowrap;padding-right:16px;border-right:1px solid var(--border);margin-right:4px;flex-shrink:0;}
+.topbar-spacer{flex:1;}
+.topbar-actions{display:flex;align-items:center;gap:7px;}
+.icon-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);background:none;color:var(--text-muted);cursor:pointer;transition:all .12s;}
+.icon-btn:hover{background:var(--bg);color:var(--text);}
+.icon-btn svg{width:15px;height:15px;}
+.btn-ghost{font-size:10.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;padding:0 13px;height:30px;border:1px solid var(--border-strong);background:none;color:var(--text);cursor:pointer;transition:all .12s;white-space:nowrap;}
+.btn-ghost:hover{background:var(--bg);}
+.btn-primary{font-size:10.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;padding:0 14px;height:30px;border:none;background:var(--primary);color:#fff;cursor:pointer;transition:background .12s;white-space:nowrap;}
+.btn-primary:hover{background:var(--primary-dk);}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;overflow-x:hidden;}
+.page{display:none;}
+.page.active{display:block;}
+.page-inner{padding:32px 48px;width:100%;}
+
+/* ALERT */
+.alert-banner{background:#fffbeb;border-bottom:2px solid var(--amber-bd);padding:10px 28px;}
+.alert-inner{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.alert-pip{width:8px;height:8px;border-radius:50%;background:var(--amber);flex-shrink:0;animation:pip 2s infinite;}
+@keyframes pip{0%,100%{box-shadow:0 0 0 2px rgba(217,119,6,.25);}50%{box-shadow:0 0 0 6px rgba(217,119,6,.08);}}
+.alert-text{font-size:12.5px;color:#78350f;flex:1;}
+.alert-text strong{font-weight:700;}
+.alert-cta{font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#78350f;border:1px solid var(--amber-bd);background:#fff;padding:5px 12px;cursor:pointer;white-space:nowrap;}
+.alert-cta:hover{background:#fef3c7;}
+
+/* SECTION */
+.section{margin-bottom:44px;}
+.section-label{font-size:9.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--text-subtle);margin-bottom:6px;display:flex;align-items:center;gap:10px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border);}
+.section-title{font-family:'Newsreader',serif;font-size:26px;font-weight:500;color:var(--text);line-height:1.2;margin-bottom:6px;letter-spacing:-.2px;}
+.section-sub{font-size:13.5px;color:var(--text-muted);line-height:1.6;max-width:780px;}
+
+/* HERO */
+.hero-block{background:#111;color:#fff;padding:44px 48px 0;position:relative;overflow:hidden;}
+.hero-block::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(255,255,255,.012) 0,rgba(255,255,255,.012) 1px,transparent 1px,transparent 80px);pointer-events:none;}
+.hero-eyebrow{font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:20px;display:flex;align-items:center;gap:10px;}
+.hero-eyebrow::before{content:'';width:20px;height:1px;background:rgba(255,255,255,.28);}
+.hero-heading{font-family:'Newsreader',serif;font-size:38px;line-height:1.15;font-weight:400;max-width:1000px;margin-bottom:14px;letter-spacing:-.3px;}
+.hero-heading em{color:rgba(255,255,255,.6);font-style:italic;}
+.hero-foot{font-family:'Newsreader',serif;font-size:13.5px;color:rgba(255,255,255,.42);font-style:italic;margin-bottom:36px;}
+.hero-signals{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(255,255,255,.1);}
+.hero-signal{padding:18px 4px 20px;border-right:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:11px;}
+.hero-signal:first-child{padding-left:0;}
+.hero-signal:last-child{border-right:none;}
+.hsig-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.hsig-market{font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:2px;}
+.hsig-val{font-family:'Newsreader',serif;font-size:20px;color:#fff;}
+.hsig-val.tight{color:#fca5a5;}
+.hsig-val.balanced{color:#86efac;}
+.hsig-val.declining{color:#fcd34d;}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;letter-spacing:.4px;padding:2px 7px;white-space:nowrap;}
+.badge-red{color:var(--red);background:var(--red-lt);border:1px solid var(--red-bd);}
+.badge-amber{color:#92400e;background:var(--amber-lt);border:1px solid var(--amber-bd);}
+.badge-green{color:var(--green);background:var(--green-lt);border:1px solid var(--green-bd);}
+.badge-blue{color:var(--blue);background:var(--blue-lt);border:1px solid var(--blue-bd);}
+.badge-gray{color:var(--text-muted);background:var(--bg);border:1px solid var(--border);}
+
+/* TAGS */
+.tag-row{display:flex;flex-wrap:wrap;gap:6px;}
+.tag{font-size:10.5px;padding:3px 9px;border:1px solid var(--border);background:var(--surface);color:var(--text-muted);}
+
+/* MARKET GRID - equal bottom alignment via CSS Grid stretch */
+.market-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);align-items:stretch;}
+.mcard{background:var(--surface);display:flex;flex-direction:column;height:100%;}
+.mcard-bar{height:3px;flex-shrink:0;}
+.mcard-hd{padding:18px 20px 14px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.mcard-eyebrow{font-size:9.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px;}
+.mcard-name{font-family:'Newsreader',serif;font-size:20px;margin-bottom:10px;}
+.mcard-status{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:5px 9px;display:inline-block;}
+.mcard-status.tight{background:var(--red-lt);color:var(--red);border:1px solid var(--red-bd);}
+.mcard-status.available{background:var(--green-lt);color:var(--green);border:1px solid var(--green-bd);}
+.mcard-status.low{background:var(--amber-lt);color:#92400e;border:1px solid var(--amber-bd);}
+.mcard-body{padding:14px 20px;flex:1;}
+.mcard-bucket{padding:9px 0;border-top:1px solid var(--border);}
+.mcard-bucket:first-child{border-top:none;padding-top:0;}
+.mcard-bucket-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-subtle);margin-bottom:5px;}
+.mcard-stat{display:flex;justify-content:space-between;align-items:baseline;padding:2px 0;}
+.mcard-stat span{font-size:12px;color:var(--text-muted);}
+.mcard-stat strong{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;}
+.mcard-stat strong.neg{color:var(--red);}
+.mcard-stat strong.pos{color:var(--green);}
+.mcard-stat strong em{font-style:normal;font-size:9.5px;color:var(--text-subtle);margin-left:3px;}
+.mcard-spacer{flex:1;}
+.mcard-impl{margin:0 20px 0;padding:12px 14px;background:#111;color:#fafafa;flex-shrink:0;}
+.mcard-impl-label{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:4px;}
+.mcard-impl-text{font-size:12.5px;font-weight:500;line-height:1.4;}
+.mcard-ft{padding:12px 20px;background:var(--bg);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:nowrap;flex-shrink:0;min-height:44px;}
+.market-link{font-size:11px;font-weight:700;color:var(--primary);letter-spacing:.2px;white-space:nowrap;}
+
+/* SCORECARD */
+.sc-filter-bar{display:flex;gap:0;margin-bottom:16px;}
+.sc-filter-btn{font-size:10.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:6px 14px;border:1px solid var(--border);background:none;color:var(--text-muted);cursor:pointer;margin-right:-1px;transition:all .12s;}
+.sc-filter-btn.active{background:var(--text);color:#fff;border-color:var(--text);z-index:1;}
+.sc-filter-btn:hover:not(.active){background:var(--bg);color:var(--text);}
+.sc-wrap{overflow-x:auto;}
+.scorecard{width:100%;border-collapse:collapse;font-size:12.5px;}
+.scorecard thead th{padding:9px 16px;text-align:left;font-size:9.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-muted);background:var(--surface-low);border-bottom:2px solid var(--border);white-space:nowrap;}
+.scorecard thead th:not(:first-child){text-align:center;}
+.sc-mth{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.sc-dot{width:8px;height:8px;border-radius:50%;}
+.sc-ml{font-size:11px;font-weight:700;}
+.sc-ms{font-size:10px;color:var(--text-subtle);}
+.scorecard tbody tr{border-bottom:1px solid var(--border);}
+.scorecard tbody tr:nth-child(even){background:var(--surface-low);}
+.scorecard tbody tr:hover{background:#ececec;}
+.scorecard tbody td{padding:9px 16px;vertical-align:middle;}
+.scorecard tbody td:first-child{font-weight:500;width:260px;}
+.scorecard tbody td .kpi-sub{font-size:9.5px;color:var(--text-subtle);font-weight:400;display:block;margin-top:1px;letter-spacing:.3px;text-transform:uppercase;}
+.scorecard tbody td:not(:first-child){text-align:center;}
+.sc-cell{display:inline-flex;flex-direction:column;align-items:center;gap:4px;}
+.sc-val{font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;}
+.sc-secondary td:first-child{color:var(--text-muted);font-weight:400;}
+.sc-secondary .sc-val{font-size:13px;color:var(--text-muted);font-weight:500;}
+.sc-action{background:#111 !important;}
+.sc-action:hover{background:#1a1a1a !important;}
+.sc-action td{padding:16px;border-bottom:none;color:#fff;}
+.sc-action td:first-child{font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.4);}
+.sc-action-cell{display:flex;flex-direction:column;align-items:center;gap:3px;}
+.sc-action-verb{font-family:'Newsreader',serif;font-size:15px;font-weight:400;line-height:1.2;}
+.sc-action-verb.stabilize{color:#fca5a5;}
+.sc-action-verb.expand{color:#86efac;}
+.sc-action-verb.monitor{color:#fcd34d;}
+.sc-action-sub{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.6px;text-transform:uppercase;font-weight:700;}
+.scorecard.filter-bloom .col-ws,.scorecard.filter-bloom .col-canton{display:none;}
+.scorecard.filter-ws .col-bloom,.scorecard.filter-ws .col-canton{display:none;}
+.scorecard.filter-canton .col-bloom,.scorecard.filter-canton .col-ws{display:none;}
+
+/* STRATEGY */
+.strategy-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.strat-card{background:var(--surface);padding:26px 22px;border-left:4px solid transparent;}
+.strat-card.bloom{border-left-color:var(--primary);}
+.strat-card.ws{border-left-color:var(--ws);}
+.strat-card.canton{border-left-color:var(--canton);}
+.strat-verb{font-size:9.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text-subtle);margin-bottom:6px;display:block;}
+.strat-market{font-family:'Newsreader',serif;font-size:19px;margin-bottom:6px;font-weight:500;}
+.strat-card.bloom .strat-market{color:var(--primary);}
+.strat-card.ws .strat-market{color:var(--ws);}
+.strat-card.canton .strat-market{color:var(--canton);}
+.strat-headline{font-family:'Newsreader',serif;font-size:16px;line-height:1.35;margin:8px 0 10px;font-weight:600;color:var(--text);}
+.strat-body{font-size:12.5px;line-height:1.65;color:var(--text-muted);}
+.strat-body strong{color:var(--text);}
+.strat-tag{display:inline-flex;align-items:center;gap:5px;margin-top:14px;padding:5px 10px;background:#111;color:#fff;font-size:9.5px;letter-spacing:.7px;text-transform:uppercase;font-weight:700;}
+.strat-tag-dot{width:5px;height:5px;border-radius:50%;}
+
+/* KEY INSIGHT */
+.ki-block{background:#111;color:#fff;padding:26px 30px;margin-bottom:24px;border-left:4px solid var(--primary);}
+.ki-label{font-size:9.5px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;color:rgba(255,255,255,.38);margin-bottom:8px;}
+.ki-title{font-family:'Newsreader',serif;font-size:19px;line-height:1.35;color:#fff;margin-bottom:14px;font-weight:500;}
+.ki-title em{color:#fca5a5;font-style:normal;font-weight:600;}
+.ki-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);}
+.ki-item{display:flex;flex-direction:column;gap:4px;}
+.ki-market{font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.38);}
+.ki-signal{font-size:12.5px;line-height:1.5;color:rgba(255,255,255,.82);}
+.ki-signal strong{color:#fff;}
+
+/* CALLOUT */
+.callout{padding:13px 16px;border-left:3px solid;margin-bottom:18px;}
+.callout p{font-size:12.5px;line-height:1.6;}
+.callout.blue{border-color:var(--blue);background:var(--blue-lt);}
+.callout.blue p{color:#1e3a8a;}
+.callout.amber{border-color:var(--amber);background:var(--amber-lt);}
+.callout.amber p{color:#78350f;}
+.callout.green{border-color:var(--green);background:var(--green-lt);}
+.callout.green p{color:#14532d;}
+
+/* COMPETITOR BLOCKS */
+.comp-market-block{margin-bottom:28px;}
+.comp-market-hd{display:flex;align-items:center;gap:12px;padding:13px 18px;border:1px solid var(--border);border-bottom:none;background:var(--surface-low);}
+.comp-market-stripe{width:3px;align-self:stretch;flex-shrink:0;}
+.comp-mhd-label{font-size:9.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;margin-bottom:2px;}
+.comp-mhd-name{font-family:'Newsreader',serif;font-size:17px;font-weight:500;}
+.comp-mhd-desc{font-size:12px;color:var(--text-muted);margin-top:2px;}
+
+/* ACCORDION */
+.accordion-list{border:1px solid var(--border);}
+.acc-item{border-bottom:1px solid var(--border);}
+.acc-item:last-child{border-bottom:none;}
+.acc-header{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;cursor:pointer;background:var(--surface);width:100%;border:none;text-align:left;transition:background .12s;}
+.acc-header:hover{background:var(--surface-low);}
+.acc-item.open .acc-header{background:var(--surface-low);border-bottom:1px solid var(--border);}
+.acc-left{flex:1;min-width:0;}
+.acc-company{font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px;}
+.acc-sector{font-size:11px;color:var(--text-muted);margin-bottom:5px;}
+.acc-signal-short{font-size:12px;color:var(--text-muted);line-height:1.5;max-width:560px;}
+.acc-right{display:flex;align-items:center;gap:9px;flex-shrink:0;margin-top:1px;}
+.acc-toggle{width:26px;height:26px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);background:none;color:var(--text-muted);cursor:pointer;font-size:18px;font-weight:300;line-height:1;flex-shrink:0;transition:all .15s;}
+.acc-item.open .acc-toggle{background:var(--text);color:#fff;border-color:var(--text);}
+.acc-body{display:none;padding:20px 22px;background:var(--surface);}
+.acc-item.open .acc-body{display:block;animation:fadeUp .2s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+.acc-body-text{font-size:12.5px;color:var(--text-muted);line-height:1.6;margin-bottom:8px;}
+.comp-label{font-size:9.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--text-subtle);margin:12px 0 4px;}
+.comp-impl{font-size:12.5px;color:var(--text);line-height:1.55;}
+.comp-divider{height:1px;background:var(--border);margin:10px 0;}
+.comp-sources{margin-top:14px;padding-top:10px;border-top:1px dashed var(--border);font-size:10.5px;color:var(--text-subtle);line-height:1.65;}
+.comp-sources strong{display:block;font-weight:700;font-size:9px;letter-spacing:.7px;text-transform:uppercase;margin-bottom:4px;}
+.comp-sources a{color:var(--text-muted);text-decoration:underline;}
+.comp-sources a:hover{color:var(--primary);}
+
+/* MARKET TABS */
+.mktabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:22px;}
+.mktab{padding:9px 18px;font-size:11.5px;font-weight:600;color:var(--text-muted);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .12s;display:flex;align-items:center;gap:7px;letter-spacing:.2px;}
+.mktab-dot{width:6px;height:6px;border-radius:50%;opacity:.35;}
+.mktab.active{color:var(--text);border-bottom-color:var(--text);}
+.mktab.active .mktab-dot{opacity:1;}
+.mktab:hover:not(.active){color:var(--text);}
+.mktab-panel{display:none;}
+.mktab-panel.active{display:block;animation:fadeUp .25s ease;}
+
+/* DATA COLUMNS */
+.data-col-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.data-col{background:var(--surface);padding:20px 22px;}
+.data-col-label{font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-subtle);margin-bottom:14px;display:flex;align-items:center;gap:6px;}
+.data-col-label::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.45;}
+.data-stat{margin-bottom:11px;padding-bottom:11px;border-bottom:1px solid var(--border);}
+.data-stat:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.data-stat-l{font-size:11px;color:var(--text-muted);margin-bottom:2px;}
+.data-stat-v{font-size:18px;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums;}
+.data-stat-v.green{color:var(--green);}
+.data-stat-v.red{color:var(--red);}
+.data-stat-v.amber{color:var(--amber);}
+.data-stat-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.data-footer{padding:15px 18px;border:1px solid var(--border);border-top:3px solid;margin-top:1px;background:var(--surface-low);display:flex;gap:12px;align-items:flex-start;}
+.data-footer-icon{width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.data-footer-text{font-size:12.5px;color:var(--text);line-height:1.5;}
+.data-footer-text strong{font-weight:700;}
+
+/* HOUSING MAP SECTION */
+.housing-map-wrap{margin-top:16px;border:1px solid var(--border);display:grid;grid-template-columns:260px 1fr;background:var(--border);gap:1px;}
+.housing-map-sidebar{background:var(--surface);padding:20px;}
+.housing-map-label{font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-subtle);margin-bottom:14px;}
+.housing-map-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.housing-map-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
+.housing-map-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.housing-map-city{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.housing-map-dist{font-size:11px;color:var(--text-muted);}
+.housing-map-frame{background:var(--surface);}
+.housing-map-frame iframe{display:block;width:100%;height:280px;border:none;}
+.housing-map-caption{padding:8px 12px;background:var(--surface-low);border-top:1px solid var(--border);font-size:10.5px;color:var(--text-subtle);}
+
+/* FINDINGS */
+.findings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);}
+.finding{background:var(--surface);padding:20px 22px;}
+.finding-chip{font-size:9.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;padding:3px 8px;display:inline-block;margin-bottom:9px;}
+.finding h3{font-family:'Newsreader',serif;font-size:16px;line-height:1.3;margin-bottom:7px;font-weight:500;}
+.finding p{font-size:12.5px;color:var(--text-muted);line-height:1.65;}
+
+/* RECOMMENDATIONS */
+.recs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);}
+.rec{background:var(--surface);padding:22px 20px;display:flex;flex-direction:column;gap:8px;position:relative;overflow:hidden;}
+.rec::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.rec.bloom::before{background:var(--bloom);}
+.rec.ws::before{background:var(--ws);}
+.rec.canton::before{background:var(--canton);}
+.rec-num{font-family:'Newsreader',serif;font-size:38px;line-height:1;color:var(--border);}
+.rec-mkt{font-size:9.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:2px 7px;display:inline-block;align-self:flex-start;}
+.rec h3{font-size:13.5px;line-height:1.35;font-weight:600;color:var(--text);}
+.rec p{font-size:12.5px;color:var(--text-muted);line-height:1.6;flex:1;}
+.rec-action{font-size:11px;font-weight:700;color:var(--primary);margin-top:4px;padding-top:10px;border-top:1px solid var(--border);}
+
+/* CARD */
+.card{background:var(--surface);border:1px solid var(--border);padding:22px;}
+.card-title{font-family:'Newsreader',serif;font-size:17px;font-weight:500;margin-bottom:3px;}
+.card-sub{font-size:12px;color:var(--text-muted);}
+
+/* EMBED */
+.embed-wrap{border:1px solid var(--border);overflow:hidden;}
+.embed-ratio{position:relative;width:100%;padding-top:52%;background:linear-gradient(135deg,#f0f4fa,#e8eef6);}
+.embed-ph{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:13px;color:var(--text-muted);}
+.embed-ph-icon{width:52px;height:52px;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;}
+.embed-ph h3{font-size:15px;color:var(--text);}
+.embed-ph p{font-size:12.5px;text-align:center;max-width:340px;}
+.embed-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--surface-low);border-top:1px solid var(--border);}
+.embed-label{font-size:11px;color:var(--text-muted);}
+.embed-actions{display:flex;gap:7px;}
+
+/* SOURCES */
+.sources-grid{display:grid;grid-template-columns:2fr 1fr;gap:32px;}
+.sources-list ol,.sources-list ul{padding-left:16px;}
+.sources-list li{font-size:12.5px;color:var(--text-muted);margin-bottom:7px;line-height:1.5;}
+.sources-list li a{color:var(--primary);}
+.src-subhead{font-size:9.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-subtle);margin:18px 0 7px;}
+.src-subhead:first-child{margin-top:0;}
+.di{font-size:12.5px;color:var(--text-muted);margin-bottom:5px;}
+.di strong{color:var(--text);font-weight:600;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--surface);border:2px solid var(--text);max-width:460px;width:90%;padding:28px 32px;}
+.modal-title{font-family:'Newsreader',serif;font-size:20px;font-weight:500;margin-bottom:10px;}
+.modal-body{font-size:13px;color:var(--text-muted);line-height:1.65;margin-bottom:20px;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:#111;color:#fff;padding:12px 18px;font-size:12.5px;font-weight:500;z-index:600;display:none;gap:10px;align-items:center;border-left:3px solid var(--primary);}
+.toast.show{display:flex;}
+
+/* PRINT */
+@media print{
+  .sidebar,.topbar,.alert-banner,.modal-overlay,.toast{display:none !important;}
+  .main{margin-left:0 !important;}
+  .content{height:auto;overflow:visible;}
+  .page{display:block !important;}
+  .hero-block{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .hero-heading{font-size:30px;}
+  .market-grid,.strategy-grid,.recs-grid,.ki-grid{grid-template-columns:1fr;}
+  .data-col-grid{grid-template-columns:1fr;}
+  .findings-grid{grid-template-columns:1fr;}
+  .sources-grid{grid-template-columns:1fr;}
+  .housing-map-wrap{grid-template-columns:1fr;}
+  .housing-map-frame iframe{height:220px;}
+}
+@media(max-width:768px){
+  .page-inner{padding:20px 20px;}
+  .hero-block{padding:28px 20px 0;}
+  .hero-heading{font-size:24px;}
+  .hero-signals{grid-template-columns:1fr;}
+  .hero-signal{border-right:none;border-bottom:1px solid rgba(255,255,255,.08);}
+  .hero-signal:last-child{border-bottom:none;}
+  .acc-right .badge{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="sidebar-logo-word">Cook Medical</div>
+    <div class="sidebar-logo-sub">Workforce Intel</div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-group-label">Analysis</div>
+    <button class="nav-item active" data-page="pg-summary" onclick="showPage('pg-summary',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="5" height="5"/><rect x="9.5" y="1.5" width="5" height="5"/><rect x="1.5" y="9.5" width="5" height="5"/><rect x="9.5" y="9.5" width="5" height="5"/></svg>
+      Executive Summary
+    </button>
+    <button class="nav-item" data-page="pg-scorecard" onclick="showPage('pg-scorecard',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1.5 3h13M1.5 7h13M1.5 11h13M5 1.5v13M11 1.5v13"/></svg>
+      Market Scorecard
+    </button>
+    <button class="nav-item" data-page="pg-supply" onclick="showPage('pg-supply',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M1.5 14c0-2.5 2-4 4.5-4s4.5 1.5 4.5 4"/><circle cx="12" cy="5" r="2"/><path d="M14.5 14c0-2-1.4-3-2.5-3"/></svg>
+      Workforce Supply
+    </button>
+    <button class="nav-item" data-page="pg-demand" onclick="showPage('pg-demand',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="1.5,12.5 5.5,8 8.5,10 14.5,4"/></svg>
+      Demand Analytics
+    </button>
+    <button class="nav-item" data-page="pg-housing" onclick="showPage('pg-housing',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7.5L8 2l6 5.5"/><path d="M3.5 6.5V14h4V10h1v4h4V6.5"/></svg>
+      Housing Affordability
+    </button>
+    <div class="nav-group-label" style="margin-top:4px;">Intelligence</div>
+    <button class="nav-item" data-page="pg-comp" onclick="showPage('pg-comp',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4.5" cy="8" r="2.5"/><circle cx="11.5" cy="5" r="2.5"/><circle cx="11.5" cy="11" r="2.5"/><path d="M7 8h2m-2-3.5 2 1m-2 5 2-1"/></svg>
+      Competitive Intel
+    </button>
+    <button class="nav-item" data-page="pg-strategy" onclick="showPage('pg-strategy',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14l3-8 4 3 3-7"/><circle cx="12" cy="3" r="1.5"/></svg>
+      Strategic Planning
+    </button>
+    <button class="nav-item" data-page="pg-dashboard" onclick="showPage('pg-dashboard',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.5" y="1.5" width="13" height="10"/><path d="M4.5 14.5h7M8 11.5v3"/></svg>
+      Power BI Dashboard
+    </button>
+    <div class="nav-group-label" style="margin-top:4px;">Reference</div>
+    <button class="nav-item" data-page="pg-sources" onclick="showPage('pg-sources',this)">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.5 1.5h9v13h-9z"/><path d="M5.5 5h5M5.5 7.5h5M5.5 10h3"/></svg>
+      Data Sources
+    </button>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="sidebar-meta">Bloomington IN · Winston-Salem NC · Canton IL<br/>Prepared for Stephanie L. · April 2026</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()" title="Menu">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="2" y1="4" x2="14" y2="4"/><line x1="2" y1="8" x2="14" y2="8"/><line x1="2" y1="12" x2="14" y2="12"/></svg>
+    </button>
+    <div class="topbar-title" id="topbar-title">Executive Summary</div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-actions">
+      <button class="icon-btn" title="Print report" onclick="window.print()">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 5V1.5h8V5"/><rect x="1.5" y="5" width="13" height="7"/><path d="M4 12v2.5h8V12"/><circle cx="12" cy="8" r=".8" fill="currentColor" stroke="none"/></svg>
+      </button>
+      <button class="btn-ghost" onclick="archiveReport()">Archive</button>
+      <button class="btn-primary" onclick="exportData()">Export Data</button>
+    </div>
+  </div>
+
+  <!-- ARCHIVE MODAL -->
+  <div class="modal-overlay" id="archiveModal">
+    <div class="modal">
+      <div class="modal-title">Archive This Report</div>
+      <div class="modal-body">
+        Archiving saves a static snapshot of the workforce intelligence briefing as a PDF for distribution and record-keeping.<br><br>
+        Your browser's print dialog will open. Select <strong>"Save as PDF"</strong> as the destination to create a permanent archive copy. All pages will print in sequence.
+      </div>
+      <div class="modal-actions">
+        <button class="btn-ghost" onclick="closeModal('archiveModal')">Cancel</button>
+        <button class="btn-primary" onclick="closeModal('archiveModal');window.print();">Save as PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 3L6 13l-3-3"/></svg>
+    <span id="toast-msg">Export complete.</span>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+<!-- ============================================================
+     PAGE: EXECUTIVE SUMMARY
+============================================================ -->
+<div class="page active" id="pg-summary">
+  <div class="alert-banner">
+    <div class="alert-inner">
+      <div class="alert-pip"></div>
+      <div class="alert-text"><strong>Active Recruitment Window: Bloomington, IN.</strong> Novo Nordisk is cutting approximately 400 jobs effective May 2026. Skilled biomanufacturing workers with QA, production, and maintenance profiles are entering the market. Time-sensitive. <a href="https://www.xtalks.com/layoffs-hit-novo-nordisks-ex-catalent-site-despite-turnaround-efforts-4732/" target="_blank" rel="noopener" style="color:inherit;text-decoration:underline;font-size:11px;opacity:.8;">[Xtalks / BioSpace]</a></div>
+      <button class="alert-cta" onclick="showPage('pg-comp',document.querySelector('[data-page=pg-comp]'))">View Competitive Intel</button>
+    </div>
+  </div>
+  <div class="hero-block">
+    <div class="hero-eyebrow">Executive Briefing · April 2026</div>
+    <div class="hero-heading">Cook faces a tightening labor market in Bloomington, <em>surplus capacity</em> in Winston-Salem, and <em>structural stagnation</em> in Canton.</div>
+    <div class="hero-foot">This is not a briefing. It is a position.</div>
+    <div class="hero-signals">
+      <div class="hero-signal"><span class="hsig-dot" style="background:#fca5a5"></span><div><div class="hsig-market">Bloomington, IN</div><div class="hsig-val tight">Tight</div></div></div>
+      <div class="hero-signal"><span class="hsig-dot" style="background:#86efac"></span><div><div class="hsig-market">Winston-Salem, NC</div><div class="hsig-val balanced">Balanced</div></div></div>
+      <div class="hero-signal"><span class="hsig-dot" style="background:#fcd34d"></span><div><div class="hsig-market">Canton / Peoria, IL</div><div class="hsig-val declining">Declining</div></div></div>
+    </div>
+  </div>
+  <div class="page-inner">
+    <div class="section">
+      <div class="section-label">Overview</div>
+      <div class="section-title">Three Markets. One Intelligence System.</div>
+      <div class="section-sub" style="margin-bottom:14px;">This briefing consolidates Cook Medical's labor market analysis across all three U.S. site MSAs into a single comparative view, structured for the executive board and CFO. Navigate sections via the sidebar.</div>
+      <div class="tag-row">
+        <span class="tag">OEWS Wages: May 2024</span><span class="tag">Unemployment: Oct 2024 to Sep 2025</span><span class="tag">Housing: ACS 2020 to 2024</span><span class="tag">Demographics: ACS 2024 1-Year</span><span class="tag">Postings: Feb to Apr 2026</span><span class="tag">Competitor Research: Apr 2026</span>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">Market Snapshots</div>
+      <div class="market-grid">
+        <!-- BLOOMINGTON -->
+        <div class="mcard">
+          <div class="mcard-bar" style="background:var(--bloom)"></div>
+          <div class="mcard-hd">
+            <div class="mcard-eyebrow" style="color:var(--bloom)">Bloomington · Monroe + Owen Co., IN</div>
+            <div class="mcard-name">Bloomington</div>
+            <div class="mcard-status tight">Tight Labor Market</div>
+          </div>
+          <div class="mcard-body">
+            <div class="mcard-bucket"><div class="mcard-bucket-label">Supply</div><div class="mcard-stat"><span>Production workforce</span><strong>7,020</strong></div><div class="mcard-stat"><span>Assembler LQ</span><strong>3.97 <em>4x natl</em></strong></div></div>
+            <div class="mcard-bucket"><div class="mcard-bucket-label">Cost Pressure</div><div class="mcard-stat"><span>Mortgage affordability gap</span><strong class="neg">-$8.31/hr</strong></div><div class="mcard-stat"><span>Assembler median wage</span><strong>$17.69/hr</strong></div></div>
+            <div class="mcard-bucket"><div class="mcard-bucket-label">Competition</div><div class="mcard-stat"><span>Active assembler postings</span><strong>27</strong></div><div class="mcard-stat"><span>Dominant threat</span><strong>Simtra · expanding</strong></div></div>
+          </div>
+          <div class="mcard-impl"><div class="mcard-impl-label">What Cook should do</div><div class="mcard-impl-text">Recruitment risk rising. Retention strategy required.</div></div>
+          <div class="mcard-ft"><a class="market-link" href="https://edwardbkim.github.io/bacw_bloomington_msa/" target="_blank">Full market report</a><span class="badge badge-amber">Novo layoff window · May 2026</span></div>
+        </div>
+        <!-- WINSTON-SALEM -->
+        <div class="mcard">
+          <div class="mcard-bar" style="background:var(--ws)"></div>
+          <div class="mcard-hd">
+            <div class="mcard-eyebrow" style="color:var(--ws)">Winston-Salem · 5-County MSA, NC</div>
+            <div class="mcard-name">Winston-Salem</div>
+            <div class="mcard-status available">Available but Competitive</div>
+          </div>
+          <div class="mcard-body">
+            <div class="mcard-bucket"><div class="mcard-bucket-label">Supply</div><div class="mcard-stat"><span>Production workforce</span><strong>22,950</strong></div><div class="mcard-stat"><span>Population trend</span><strong class="pos">+7.4%</strong></div></div>
+            <div class="mcard-bucket"><div class="mcard-bucket-label">Cost Pressure</div><div class="mcard-stat"><span>Mortgage affordability gap</span><strong class="neg">-$7.98/hr</strong></div><div class="mcard-stat"><span>Assembler median wage</span><strong>$19.08/hr</strong></div></div>
+            <div class="mcard-bucket"><div class="mcard-bucket-label">Competition</div><div class="mcard-stat"><span>Active assembler postings</span><strong>12</strong></div><div class="mcard-stat"><span>Dominant threat</span><strong>Reynolds · wage floor</strong></div></div>
+          </div>
+          <div class="mcard-impl"><div class="mcard-impl-label">What Cook should do</div><div class="mcard-impl-text">Primary expansion candidate. Differentiate against RAI on pathway and brand.</div></div>
+          <div class="mcard-ft"><a class="market-link" href="https://edwardbkim.github.io/bacw_cook_winstonsalem/" target="_blank">Full market report</a><span class="badge badge-blue">Largest pool</span></div>
+        </div>
+        <!-- CANTON -->
+        <div class="mcard">
+          <div class="mcard-bar" style="background:var(--canton)"></div>
+          <div class="mcard-hd">
+            <div class="mcard-eyebrow" style="color:var(--canton)">Peoria MSA · Fulton Co., IL</div>
+            <div class="mcard-name">Canton</div>
+            <div class="mcard-status low">Low Growth / Low Pressure</div>
+          </div>
+          <div class="mcard-body">
+            <div class="mcard-bucket"><div class="mcard-bucket-label">Supply</div><div class="mcard-stat"><span>Production workforce</span><strong>14,810</strong></div><div class="mcard-stat"><span>Population trend</span><strong class="neg">-11.5%</strong></div></div>
+            <div class="mcard-bucket"><div class="mcard-bucket-label">Cost Pressure</div><div class="mcard-stat"><span>Mortgage affordability gap</span><strong class="pos">+$0.80/hr</strong></div><div class="mcard-stat"><span>Assembler median wage</span><strong>$22.43/hr</strong></div></div>
+            <div class="mcard-bucket"><div class="mcard-bucket-label">Competition</div><div class="mcard-stat"><span>Active assembler postings</span><strong>8</strong></div><div class="mcard-stat"><span>Dominant threat</span><strong>Caterpillar · UAW</strong></div></div>
+          </div>
+          <div class="mcard-impl"><div class="mcard-impl-label">What Cook should do</div><div class="mcard-impl-text">Stabilize operations. Prioritize retention depth over hiring volume.</div></div>
+          <div class="mcard-ft"><a class="market-link" href="https://edwardbkim.github.io/bacw_cook_canton/" target="_blank">Full market report</a><span class="badge badge-green">Cook's affordability leader</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">Key Findings</div>
+      <div class="findings-grid">
+        <div class="finding"><span class="finding-chip" style="background:var(--red-lt);color:var(--red);">Housing · Critical</span><h3>Homeownership is structurally unaffordable in two of three markets</h3><p>Bloomington (-$8.31/hr) and Winston-Salem (-$7.98/hr) production workers cannot afford to buy a home on a single income at the local production median wage. This is not a wage problem; it is a structural retention risk. Workers who cannot build equity are workers who leave. Canton is the only Cook market where the math works: +$0.80/hr over the homeownership threshold on a $107,100 median home value.</p></div>
+        <div class="finding"><span class="finding-chip" style="background:var(--amber-lt);color:var(--amber);">Bloomington · Opportunity</span><h3>Novo Nordisk's exit creates a rare talent injection</h3><p>Approximately 400 skilled biomanufacturing workers will enter the Bloomington labor market in May 2026. The Assembler LQ of 3.97 means Bloomington already has the deepest concentration of this exact worker profile in the country. Cook should move immediately. Simtra BioPharma, which is expanding in the same market, will be absorbing from the same pool.</p></div>
+        <div class="finding"><span class="finding-chip" style="background:var(--green-lt);color:var(--green);">Winston-Salem · Scale</span><h3>Winston-Salem is Cook's most scalable long-term recruiting market</h3><p>22,950 production workers, +7.4% population growth, 11.3% mobility rate (vs. 21.8% in Bloomington). The challenge here is not access; it is differentiation. Reynolds American (2,500 employees) sets the effective wage floor in Forsyth County. Cook must benchmark against RAI, not just OEWS medians, and compete on career pathway, stability, and brand.</p></div>
+        <div class="finding"><span class="finding-chip" style="background:var(--canton-lt);color:var(--canton);">Canton · Retention</span><h3>Canton's affordability edge should anchor the retention strategy</h3><p>Canton workers can afford a home at median production wages, something no Cook worker in Bloomington or Winston-Salem can do on a single income. This is a concrete, communicable retention differentiator. The risk is structural: the population has declined 11.5% since 2015. Cook's Canton strategy must prioritize tenure over volume. Caterpillar's UAW wage history shapes expectations; Cook competes on stability and medical device prestige.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: MARKET SCORECARD
+============================================================ -->
+<div class="page" id="pg-scorecard">
+  <div class="page-inner">
+    <div class="section">
+      <div class="section-label">Cross-Market Comparison</div>
+      <div class="section-title">Market Scorecard Matrix</div>
+      <div class="section-sub" style="margin-bottom:20px;">Signal: <span class="badge badge-green">Green</span> favorable &nbsp;<span class="badge badge-amber">Amber</span> caution &nbsp;<span class="badge badge-red">Red</span> risk. Use the filter to isolate a single market's column.</div>
+      <div class="sc-filter-bar">
+        <button class="sc-filter-btn active" onclick="filterScorecard('all',this)">All Markets</button>
+        <button class="sc-filter-btn" onclick="filterScorecard('bloom',this)">Bloomington, IN</button>
+        <button class="sc-filter-btn" onclick="filterScorecard('ws',this)">Winston-Salem, NC</button>
+        <button class="sc-filter-btn" onclick="filterScorecard('canton',this)">Canton / Peoria, IL</button>
+      </div>
+      <div class="card" style="padding:0;">
+        <div class="sc-wrap">
+          <table class="scorecard" id="main-scorecard">
+            <thead><tr>
+              <th>KPI</th>
+              <th class="col-bloom"><div class="sc-mth"><span class="sc-dot" style="background:var(--bloom)"></span><span class="sc-ml">Bloomington</span><span class="sc-ms">IN MSA</span></div></th>
+              <th class="col-ws"><div class="sc-mth"><span class="sc-dot" style="background:var(--ws)"></span><span class="sc-ml">Winston-Salem</span><span class="sc-ms">NC MSA</span></div></th>
+              <th class="col-canton"><div class="sc-mth"><span class="sc-dot" style="background:var(--canton)"></span><span class="sc-ml">Canton / Peoria</span><span class="sc-ms">IL MSA</span></div></th>
+            </tr></thead>
+            <tbody>
+              <tr><td>Unemployment (12-mo avg)<span class="kpi-sub">Labor Market</span></td><td class="col-bloom"><div class="sc-cell"><span class="sc-val">3.56%</span><span class="badge badge-green">Tight</span></div></td><td class="col-ws"><div class="sc-cell"><span class="sc-val">3.69%</span><span class="badge badge-green">Tight</span></div></td><td class="col-canton"><div class="sc-cell"><span class="sc-val">4.48%</span><span class="badge badge-amber">Moderate</span></div></td></tr>
+              <tr><td>Production workforce depth<span class="kpi-sub">Labor Availability</span></td><td class="col-bloom"><div class="sc-cell"><span class="sc-val">7,020</span><span class="badge badge-red">Small</span></div></td><td class="col-ws"><div class="sc-cell"><span class="sc-val">22,950</span><span class="badge badge-green">Large</span></div></td><td class="col-canton"><div class="sc-cell"><span class="sc-val">14,810</span><span class="badge badge-amber">Medium</span></div></td></tr>
+              <tr><td>Rent affordability gap<span class="kpi-sub">Structural Retention Risk</span></td><td class="col-bloom"><div class="sc-cell"><span class="sc-val">-$1.66</span><span class="badge badge-amber">Tight</span></div></td><td class="col-ws"><div class="sc-cell"><span class="sc-val">-$0.82</span><span class="badge badge-red">Borderline</span></div></td><td class="col-canton"><div class="sc-cell"><span class="sc-val">+$8.84</span><span class="badge badge-green">Affordable</span></div></td></tr>
+              <tr><td>Mortgage affordability gap<span class="kpi-sub">Structural Retention Risk</span></td><td class="col-bloom"><div class="sc-cell"><span class="sc-val">-$8.31</span><span class="badge badge-red">Critical</span></div></td><td class="col-ws"><div class="sc-cell"><span class="sc-val">-$7.98</span><span class="badge badge-red">Critical</span></div></td><td class="col-canton"><div class="sc-cell"><span class="sc-val">+$0.80</span><span class="badge badge-green">Breakeven</span></div></td></tr>
+              <tr><td>Production median wage<span class="kpi-sub">Cost Baseline ($/hr)</span></td><td class="col-bloom"><div class="sc-cell"><span class="sc-val">$21.42</span><span class="badge badge-amber">Mid</span></div></td><td class="col-ws"><div class="sc-cell"><span class="sc-val">$20.08</span><span class="badge badge-red">Lowest</span></div></td><td class="col-canton"><div class="sc-cell"><span class="sc-val">$23.57</span><span class="badge badge-green">Highest</span></div></td></tr>
+              <tr><td>Population trend (10-yr)<span class="kpi-sub">Long-Term Supply</span></td><td class="col-bloom"><div class="sc-cell"><span class="sc-val">+0.4%</span><span class="badge badge-amber">Flat</span></div></td><td class="col-ws"><div class="sc-cell"><span class="sc-val">+7.4%</span><span class="badge badge-green">Growing</span></div></td><td class="col-canton"><div class="sc-cell"><span class="sc-val">-11.5%</span><span class="badge badge-red">Declining</span></div></td></tr>
+              <tr><td>Dominant competitor threat<span class="kpi-sub">Recruitment Pressure</span></td><td class="col-bloom"><div class="sc-cell"><span class="sc-val">Simtra</span><span class="badge badge-red">Expanding</span></div></td><td class="col-ws"><div class="sc-cell"><span class="sc-val">Reynolds Am.</span><span class="badge badge-red">Wage floor</span></div></td><td class="col-canton"><div class="sc-cell"><span class="sc-val">Caterpillar</span><span class="badge badge-red">UAW wages</span></div></td></tr>
+              <tr class="sc-secondary"><td>Assembler LQ (natl avg = 1.0)</td><td class="col-bloom"><div class="sc-cell"><span class="sc-val">3.97</span><span class="badge badge-amber">Very High</span></div></td><td class="col-ws"><div class="sc-cell"><span class="sc-val">1.50</span><span class="badge badge-green">Moderate</span></div></td><td class="col-canton"><div class="sc-cell"><span class="sc-val">1.92</span><span class="badge badge-green">Strong</span></div></td></tr>
+              <tr class="sc-secondary"><td>Active assembler postings</td><td class="col-bloom"><div class="sc-cell"><span class="sc-val">27</span><span class="badge badge-amber">Moderate</span></div></td><td class="col-ws"><div class="sc-cell"><span class="sc-val">12</span><span class="badge badge-green">Low</span></div></td><td class="col-canton"><div class="sc-cell"><span class="sc-val">8</span><span class="badge badge-green">Low</span></div></td></tr>
+              <tr class="sc-secondary"><td>Median age · workforce</td><td class="col-bloom"><div class="sc-cell"><span class="sc-val">32.6</span><span class="badge badge-green">Young</span></div></td><td class="col-ws"><div class="sc-cell"><span class="sc-val">41.1</span><span class="badge badge-amber">Older</span></div></td><td class="col-canton"><div class="sc-cell"><span class="sc-val">40.7</span><span class="badge badge-amber">Older</span></div></td></tr>
+              <tr class="sc-secondary"><td>Geographic mobility</td><td class="col-bloom"><div class="sc-cell"><span class="sc-val">21.8%</span><span class="badge badge-red">High churn</span></div></td><td class="col-ws"><div class="sc-cell"><span class="sc-val">11.3%</span><span class="badge badge-green">Stable</span></div></td><td class="col-canton"><div class="sc-cell"><span class="sc-val">9.7%</span><span class="badge badge-green">Very stable</span></div></td></tr>
+              <tr class="sc-action">
+                <td>Recommended Action</td>
+                <td class="col-bloom"><div class="sc-action-cell"><span class="sc-action-verb stabilize">Stabilize &amp; Retain</span><span class="sc-action-sub">Hiring to Retention</span></div></td>
+                <td class="col-ws"><div class="sc-action-cell"><span class="sc-action-verb expand">Expand Selectively</span><span class="sc-action-sub">Primary Growth Market</span></div></td>
+                <td class="col-canton"><div class="sc-action-cell"><span class="sc-action-verb monitor">Monitor / Preserve</span><span class="sc-action-sub">Cost Discipline</span></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: WORKFORCE SUPPLY
+============================================================ -->
+<div class="page" id="pg-supply">
+  <div class="page-inner">
+    <div class="section">
+      <div class="section-label">Labor Supply</div>
+      <div class="section-title">Workforce Supply by Market</div>
+      <div class="section-sub" style="margin-bottom:22px;">Labor availability, demographics, and mobility metrics for each MSA. Source: BLS OEWS May 2024, ACS 2024 1-Year, FRED/BLS unemployment series.</div>
+      <div class="mktabs">
+        <button class="mktab active" onclick="switchTab('supply-tabs','bloom',this)"><span class="mktab-dot" style="background:var(--bloom)"></span>Bloomington, IN</button>
+        <button class="mktab" onclick="switchTab('supply-tabs','ws',this)"><span class="mktab-dot" style="background:var(--ws)"></span>Winston-Salem, NC</button>
+        <button class="mktab" onclick="switchTab('supply-tabs','canton',this)"><span class="mktab-dot" style="background:var(--canton)"></span>Canton / Peoria, IL</button>
+      </div>
+      <div id="supply-tabs">
+        <div class="mktab-panel active" data-market="bloom">
+          <div class="data-col-grid">
+            <div class="data-col" style="color:var(--bloom)"><div class="data-col-label">Core Supply Metrics</div><div class="data-stat"><div class="data-stat-l">Unemployment (12-mo avg)</div><div class="data-stat-v">3.56%</div><div class="data-stat-sub">Tight</div></div><div class="data-stat"><div class="data-stat-l">Production workforce</div><div class="data-stat-v">7,020</div><div class="data-stat-sub">Smallest of three Cook markets</div></div><div class="data-stat"><div class="data-stat-l">Assembler LQ (natl avg = 1.0)</div><div class="data-stat-v">3.97</div><div class="data-stat-sub">4x national concentration</div></div></div>
+            <div class="data-col" style="color:var(--bloom)"><div class="data-col-label">Demographics</div><div class="data-stat"><div class="data-stat-l">Median workforce age</div><div class="data-stat-v">32.6 yrs</div><div class="data-stat-sub">Youngest of three markets</div></div><div class="data-stat"><div class="data-stat-l">Geographic mobility rate</div><div class="data-stat-v red">21.8%</div><div class="data-stat-sub">High churn: IU student effect</div></div><div class="data-stat"><div class="data-stat-l">Population trend (10-yr)</div><div class="data-stat-v">+0.4%</div><div class="data-stat-sub">Flat</div></div></div>
+            <div class="data-col" style="color:var(--bloom)"><div class="data-col-label">Cook Sites in This Market</div><div class="data-stat"><div class="data-stat-l">Bloomington (primary)</div><div class="data-stat-v" style="font-size:14px;">Tight</div><div class="data-stat-sub">Negative rent and mortgage gaps</div></div><div class="data-stat"><div class="data-stat-l">Ellettsville</div><div class="data-stat-v green" style="font-size:14px;">Better</div><div class="data-stat-sub">Rent gap: +$4.98/hr</div></div><div class="data-stat"><div class="data-stat-l">Spencer</div><div class="data-stat-v green" style="font-size:14px;">Best</div><div class="data-stat-sub">Rent gap: +$6.98/hr</div></div></div>
+          </div>
+          <div class="data-footer" style="border-top-color:var(--bloom);"><div class="data-footer-icon">&#9889;</div><div class="data-footer-text"><strong>Active window:</strong> Novo Nordisk's approximately 400-worker layoff (May 2026) briefly expands the specialist pool. Simtra is expanding simultaneously; Cook's outreach must precede competitors.</div></div>
+        </div>
+        <div class="mktab-panel" data-market="ws">
+          <div class="data-col-grid">
+            <div class="data-col" style="color:var(--ws)"><div class="data-col-label">Core Supply Metrics</div><div class="data-stat"><div class="data-stat-l">Unemployment (12-mo avg)</div><div class="data-stat-v">3.69%</div><div class="data-stat-sub">Tight</div></div><div class="data-stat"><div class="data-stat-l">Production workforce</div><div class="data-stat-v">22,950</div><div class="data-stat-sub">Cook's deepest labor pool</div></div><div class="data-stat"><div class="data-stat-l">Assembler LQ (natl avg = 1.0)</div><div class="data-stat-v">1.50</div><div class="data-stat-sub">Moderate concentration</div></div></div>
+            <div class="data-col" style="color:var(--ws)"><div class="data-col-label">Demographics</div><div class="data-stat"><div class="data-stat-l">Median workforce age</div><div class="data-stat-v">41.1 yrs</div></div><div class="data-stat"><div class="data-stat-l">Geographic mobility rate</div><div class="data-stat-v green">11.3%</div><div class="data-stat-sub">Stable</div></div><div class="data-stat"><div class="data-stat-l">Population trend (10-yr)</div><div class="data-stat-v green">+7.4%</div><div class="data-stat-sub">Growing</div></div></div>
+            <div class="data-col" style="color:var(--ws)"><div class="data-col-label">MSA Counties</div><div class="data-stat"><div class="data-stat-l">5-County MSA</div><div class="data-stat-v" style="font-size:13px;line-height:1.4;">Davidson · Davie · Forsyth · Stokes · Yadkin</div></div><div class="data-stat"><div class="data-stat-l">Cook site</div><div class="data-stat-v" style="font-size:14px;">Winston-Salem</div></div></div>
+          </div>
+          <div class="data-footer" style="border-top-color:var(--ws);"><div class="data-footer-icon">&#9670;</div><div class="data-footer-text"><strong>Scale market:</strong> Winston-Salem is Cook's most scalable long-term recruiting market. The constraint is not supply; it is the Reynolds American wage floor.</div></div>
+        </div>
+        <div class="mktab-panel" data-market="canton">
+          <div class="data-col-grid">
+            <div class="data-col" style="color:var(--canton)"><div class="data-col-label">Core Supply Metrics</div><div class="data-stat"><div class="data-stat-l">Unemployment (12-mo avg)</div><div class="data-stat-v">4.48%</div><div class="data-stat-sub">Moderate</div></div><div class="data-stat"><div class="data-stat-l">Production workforce</div><div class="data-stat-v">14,810</div></div><div class="data-stat"><div class="data-stat-l">Assembler LQ (natl avg = 1.0)</div><div class="data-stat-v">1.92</div><div class="data-stat-sub">Strong concentration</div></div></div>
+            <div class="data-col" style="color:var(--canton)"><div class="data-col-label">Demographics</div><div class="data-stat"><div class="data-stat-l">Median workforce age</div><div class="data-stat-v">40.7 yrs</div></div><div class="data-stat"><div class="data-stat-l">Geographic mobility rate</div><div class="data-stat-v green">9.7%</div><div class="data-stat-sub">Very stable</div></div><div class="data-stat"><div class="data-stat-l">Population trend (10-yr)</div><div class="data-stat-v red">-11.5%</div><div class="data-stat-sub">Declining</div></div></div>
+            <div class="data-col" style="color:var(--canton)"><div class="data-col-label">MSA Scope</div><div class="data-stat"><div class="data-stat-l">Peoria MSA including Fulton County</div><div class="data-stat-v" style="font-size:14px;">Canton, IL</div><div class="data-stat-sub">Cook site: Canton</div></div><div class="data-stat"><div class="data-stat-l">Strategic posture</div><div class="data-stat-v" style="font-size:13px;color:var(--canton);">Retention over Volume</div></div></div>
+          </div>
+          <div class="data-footer" style="border-top-color:var(--canton);"><div class="data-footer-icon">&#9733;</div><div class="data-footer-text"><strong>Pool is contracting:</strong> The 11.5% population decline means any Cook worker lost in Canton is harder to replace than five years ago. Retention depth is the strategic priority.</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: DEMAND ANALYTICS
+============================================================ -->
+<div class="page" id="pg-demand">
+  <div class="page-inner">
+    <div class="section">
+      <div class="section-label">Wages and Demand</div>
+      <div class="section-title">Demand Analytics by Market</div>
+      <div class="section-sub" style="margin-bottom:22px;">Occupational wages (BLS OEWS May 2024) and active job posting data (Feb to Apr 2026) by market.</div>
+      <div class="mktabs">
+        <button class="mktab active" onclick="switchTab('demand-tabs','bloom',this)"><span class="mktab-dot" style="background:var(--bloom)"></span>Bloomington, IN</button>
+        <button class="mktab" onclick="switchTab('demand-tabs','ws',this)"><span class="mktab-dot" style="background:var(--ws)"></span>Winston-Salem, NC</button>
+        <button class="mktab" onclick="switchTab('demand-tabs','canton',this)"><span class="mktab-dot" style="background:var(--canton)"></span>Canton / Peoria, IL</button>
+      </div>
+      <div id="demand-tabs">
+        <div class="mktab-panel active" data-market="bloom">
+          <div class="data-col-grid">
+            <div class="data-col" style="color:var(--bloom)"><div class="data-col-label">OEWS Wage Medians</div><div class="data-stat"><div class="data-stat-l">Production (all occ.) median</div><div class="data-stat-v">$21.42/hr</div></div><div class="data-stat"><div class="data-stat-l">Assembler median</div><div class="data-stat-v">$17.69/hr</div></div><div class="data-stat"><div class="data-stat-l">QA/Inspection median</div><div class="data-stat-v">$28.95/hr</div></div><div class="data-stat"><div class="data-stat-l">Maintenance mechanic median</div><div class="data-stat-v">$31.20/hr</div></div></div>
+            <div class="data-col" style="color:var(--bloom)"><div class="data-col-label">Posted Market Rates</div><div class="data-stat"><div class="data-stat-l">Assembler posted range</div><div class="data-stat-v">$20 to $28/hr</div><div class="data-stat-sub">vs. OEWS $17.69 median</div></div><div class="data-stat"><div class="data-stat-l">Simtra specialist range</div><div class="data-stat-v red">$22 to $38/hr</div><div class="data-stat-sub">Above Cook's likely range</div></div></div>
+            <div class="data-col" style="color:var(--bloom)"><div class="data-col-label">Posting Activity</div><div class="data-stat"><div class="data-stat-l">Active assembler postings (30-day)</div><div class="data-stat-v">27</div><div class="data-stat-sub">Moderate demand pressure</div></div><div class="data-stat"><div class="data-stat-l">Simtra active roles (Indeed)</div><div class="data-stat-v red">33</div><div class="data-stat-sub">Persistent competitor hiring</div></div><div class="data-stat"><div class="data-stat-l">Boston Scientific IN postings</div><div class="data-stat-v">13</div></div></div>
+          </div>
+          <div class="callout amber" style="margin-top:16px;"><p><strong>Benchmark gap:</strong> The assembler posted market ($20-28/hr) already exceeds the OEWS median by $2 to $10/hr. Cook should price at or above the posted range, not at the OEWS benchmark, when competing for Novo displaced workers.</p></div>
+        </div>
+        <div class="mktab-panel" data-market="ws">
+          <div class="data-col-grid">
+            <div class="data-col" style="color:var(--ws)"><div class="data-col-label">OEWS Wage Medians</div><div class="data-stat"><div class="data-stat-l">Production (all occ.) median</div><div class="data-stat-v">$20.08/hr</div><div class="data-stat-sub">Lowest of three Cook markets</div></div><div class="data-stat"><div class="data-stat-l">Assembler median</div><div class="data-stat-v">$19.08/hr</div></div><div class="data-stat"><div class="data-stat-l">QA/Inspection median</div><div class="data-stat-v">$21.33/hr</div></div><div class="data-stat"><div class="data-stat-l">Maintenance mechanic median</div><div class="data-stat-v">$28.80/hr</div></div></div>
+            <div class="data-col" style="color:var(--ws)"><div class="data-col-label">Posted Market Rates</div><div class="data-stat"><div class="data-stat-l">Assembler posted range</div><div class="data-stat-v">$22 to $24/hr</div><div class="data-stat-sub">+$3 above OEWS median</div></div><div class="data-stat"><div class="data-stat-l">Collins Aerospace skilled range</div><div class="data-stat-v red">$22 to $35/hr</div><div class="data-stat-sub">Sets posted wage expectation</div></div><div class="data-stat"><div class="data-stat-l">Mortgage threshold (30% rule)</div><div class="data-stat-v">$28.06/hr</div></div></div>
+            <div class="data-col" style="color:var(--ws)"><div class="data-col-label">Posting Activity</div><div class="data-stat"><div class="data-stat-l">Active assembler postings (30-day)</div><div class="data-stat-v">12</div><div class="data-stat-sub">Low demand pressure</div></div><div class="data-stat"><div class="data-stat-l">Smurfit Westrock postings</div><div class="data-stat-v">7</div><div class="data-stat-sub">High volume general production</div></div></div>
+          </div>
+          <div class="callout amber" style="margin-top:16px;"><p><strong>Critical benchmark:</strong> Cook offers priced at the OEWS median ($19.08/hr) lose before the interview. Reynolds American sets the effective wage floor. Offers must be priced at the posted market range ($22-24/hr) or above.</p></div>
+        </div>
+        <div class="mktab-panel" data-market="canton">
+          <div class="data-col-grid">
+            <div class="data-col" style="color:var(--canton)"><div class="data-col-label">OEWS Wage Medians</div><div class="data-stat"><div class="data-stat-l">Production (all occ.) median</div><div class="data-stat-v">$23.57/hr</div><div class="data-stat-sub">Highest of three Cook markets</div></div><div class="data-stat"><div class="data-stat-l">Assembler median</div><div class="data-stat-v">$22.43/hr</div></div><div class="data-stat"><div class="data-stat-l">QA/Inspection median</div><div class="data-stat-v">$26.20/hr</div></div><div class="data-stat"><div class="data-stat-l">Machinist median</div><div class="data-stat-v">$24.24/hr</div></div></div>
+            <div class="data-col" style="color:var(--canton)"><div class="data-col-label">Posted Market Rates</div><div class="data-stat"><div class="data-stat-l">Assembler posted range</div><div class="data-stat-v">$20 to $42/hr</div><div class="data-stat-sub">Wide range; Caterpillar UAW pulls ceiling up</div></div><div class="data-stat"><div class="data-stat-l">Caterpillar UAW range</div><div class="data-stat-v red">$25 to $45/hr</div><div class="data-stat-sub">Defines market ceiling</div></div><div class="data-stat"><div class="data-stat-l">ITW skilled production range</div><div class="data-stat-v">$20 to $32/hr</div></div></div>
+            <div class="data-col" style="color:var(--canton)"><div class="data-col-label">Posting Activity</div><div class="data-stat"><div class="data-stat-l">Active assembler postings (30-day)</div><div class="data-stat-v">8</div><div class="data-stat-sub">Low demand pressure</div></div><div class="data-stat"><div class="data-stat-l">Caterpillar active postings</div><div class="data-stat-v red">123</div><div class="data-stat-sub">Dominant posting volume</div></div><div class="data-stat"><div class="data-stat-l">Maui Jim QA postings (Peoria)</div><div class="data-stat-v">5</div></div></div>
+          </div>
+          <div class="callout amber" style="margin-top:16px;"><p><strong>Wage ceiling effect:</strong> Caterpillar's UAW-negotiated wages ($25-45/hr) define what Canton-area production workers consider a "real" manufacturing wage. Cook competes on stability, non-cyclical employment, and the homeownership story, not wage parity with Caterpillar.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: HOUSING AFFORDABILITY (with maps)
+============================================================ -->
+<div class="page" id="pg-housing">
+  <div class="page-inner">
+    <div class="section">
+      <div class="section-label">Housing Affordability</div>
+      <div class="section-title">Affordability Analysis by Market</div>
+      <div class="section-sub" style="margin-bottom:22px;">Rent and mortgage affordability gaps calculated at the 30% income threshold against OEWS production median wages. Source: ACS 2020 to 2024. Maps show MSA boundaries and key neighboring communities.</div>
+      <div class="mktabs">
+        <button class="mktab active" onclick="switchTab('housing-tabs','bloom',this)"><span class="mktab-dot" style="background:var(--bloom)"></span>Bloomington, IN</button>
+        <button class="mktab" onclick="switchTab('housing-tabs','ws',this)"><span class="mktab-dot" style="background:var(--ws)"></span>Winston-Salem, NC</button>
+        <button class="mktab" onclick="switchTab('housing-tabs','canton',this)"><span class="mktab-dot" style="background:var(--canton)"></span>Canton / Peoria, IL</button>
+      </div>
+      <div id="housing-tabs">
+
+        <!-- BLOOMINGTON -->
+        <div class="mktab-panel active" data-market="bloom">
+          <div class="data-col-grid">
+            <div class="data-col" style="color:var(--bloom)"><div class="data-col-label">Homeownership</div><div class="data-stat"><div class="data-stat-l">Median home value (Bloomington)</div><div class="data-stat-v">$321,400</div></div><div class="data-stat"><div class="data-stat-l">Mortgage threshold (30% rule)</div><div class="data-stat-v">$26.00/hr</div></div><div class="data-stat"><div class="data-stat-l">Mortgage affordability gap</div><div class="data-stat-v red">-$8.31/hr</div><div class="data-stat-sub">Critical: cannot afford to buy</div></div></div>
+            <div class="data-col" style="color:var(--bloom)"><div class="data-col-label">Rental</div><div class="data-stat"><div class="data-stat-l">Median gross rent (Bloomington)</div><div class="data-stat-v">$1,200/mo</div></div><div class="data-stat"><div class="data-stat-l">Rent threshold (30% rule)</div><div class="data-stat-v">$19.35/hr</div></div><div class="data-stat"><div class="data-stat-l">Rent affordability gap</div><div class="data-stat-v amber">-$1.66/hr</div><div class="data-stat-sub">Tight but survivable</div></div></div>
+            <div class="data-col" style="color:var(--bloom)"><div class="data-col-label">Sub-County Affordability</div><div class="data-stat"><div class="data-stat-l">Ellettsville rent gap</div><div class="data-stat-v green">+$4.98/hr</div><div class="data-stat-sub">Affordable for renters</div></div><div class="data-stat"><div class="data-stat-l">Spencer rent gap</div><div class="data-stat-v green">+$6.98/hr</div><div class="data-stat-sub">Most affordable Cook location in market</div></div></div>
+          </div>
+          <!-- MAP -->
+          <div class="housing-map-wrap" style="margin-top:16px;">
+            <div class="housing-map-sidebar">
+              <div class="housing-map-label">Market Geography</div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:var(--primary)"></span><div><div class="housing-map-city">Bloomington (Cook HQ)</div><div class="housing-map-dist">Monroe County seat · Primary site</div></div></div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:var(--bloom)"></span><div><div class="housing-map-city">Ellettsville</div><div class="housing-map-dist">~8 mi west · Cook site · +$4.98/hr rent gap</div></div></div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:var(--bloom)"></span><div><div class="housing-map-city">Spencer</div><div class="housing-map-dist">~15 mi west · Owen County · +$6.98/hr rent gap</div></div></div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">Indianapolis</div><div class="housing-map-dist">~50 mi north · Regional labor draw</div></div></div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">Columbus, IN</div><div class="housing-map-dist">~40 mi east · Cummins labor market</div></div></div>
+            </div>
+            <div class="housing-map-frame">
+              <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-87.3%2C38.85%2C-86.05%2C39.55&layer=mapnik&marker=39.1637%2C-86.5264" title="Bloomington IN MSA Map" loading="lazy" allowfullscreen></iframe>
+              <div class="housing-map-caption">OpenStreetMap · Monroe and Owen Counties, IN · Cook sites: Bloomington, Ellettsville, Spencer</div>
+            </div>
+          </div>
+          <div class="data-footer" style="border-top-color:var(--red);margin-top:1px;"><div class="data-footer-icon">&#9888;</div><div class="data-footer-text"><strong>Retention implication:</strong> Bloomington city workers cannot afford to buy at median production wages. Spencer and Ellettsville are materially more affordable. Cook should explore housing assistance programs framed as retention ROI, not benefit cost, and consider actively promoting sub-county living options during onboarding.</div></div>
+        </div>
+
+        <!-- WINSTON-SALEM -->
+        <div class="mktab-panel" data-market="ws">
+          <div class="data-col-grid">
+            <div class="data-col" style="color:var(--ws)"><div class="data-col-label">Homeownership</div><div class="data-stat"><div class="data-stat-l">Median home value</div><div class="data-stat-v">$233,800</div></div><div class="data-stat"><div class="data-stat-l">Mortgage threshold (30% rule)</div><div class="data-stat-v">$28.06/hr</div></div><div class="data-stat"><div class="data-stat-l">Mortgage affordability gap</div><div class="data-stat-v red">-$7.98/hr</div><div class="data-stat-sub">Critical: cannot afford to buy</div></div></div>
+            <div class="data-col" style="color:var(--ws)"><div class="data-col-label">Rental</div><div class="data-stat"><div class="data-stat-l">Median gross rent</div><div class="data-stat-v">$1,087/mo</div></div><div class="data-stat"><div class="data-stat-l">Rent threshold (30% rule)</div><div class="data-stat-v">$20.90/hr</div></div><div class="data-stat"><div class="data-stat-l">Rent affordability gap</div><div class="data-stat-v red">-$0.82/hr</div><div class="data-stat-sub">Borderline: one paycheck variance</div></div></div>
+            <div class="data-col" style="color:var(--ws)"><div class="data-col-label">Wage Context</div><div class="data-stat"><div class="data-stat-l">Assembler OEWS median</div><div class="data-stat-v">$19.08/hr</div></div><div class="data-stat"><div class="data-stat-l">Posted market range</div><div class="data-stat-v">$22 to $24/hr</div><div class="data-stat-sub">Posted range clears rent threshold</div></div></div>
+          </div>
+          <div class="housing-map-wrap" style="margin-top:16px;">
+            <div class="housing-map-sidebar">
+              <div class="housing-map-label">Market Geography</div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:var(--primary)"></span><div><div class="housing-map-city">Winston-Salem (Cook site)</div><div class="housing-map-dist">Forsyth County · Primary site</div></div></div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">Greensboro</div><div class="housing-map-dist">~27 mi east · Piedmont Triad hub</div></div></div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">High Point</div><div class="housing-map-dist">~18 mi east · Furniture manufacturing</div></div></div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">Clemmons / Lewisville</div><div class="housing-map-dist">~8-12 mi west · Suburban commute corridors</div></div></div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">Charlotte</div><div class="housing-map-dist">~80 mi south · Regional economic anchor</div></div></div>
+            </div>
+            <div class="housing-map-frame">
+              <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-81.0%2C35.85%2C-79.85%2C36.42&layer=mapnik&marker=36.0999%2C-80.2442" title="Winston-Salem NC MSA Map" loading="lazy" allowfullscreen></iframe>
+              <div class="housing-map-caption">OpenStreetMap · Forsyth, Davidson, Davie, Stokes, and Yadkin Counties, NC · Cook site: Winston-Salem</div>
+            </div>
+          </div>
+          <div class="data-footer" style="border-top-color:var(--red);margin-top:1px;"><div class="data-footer-icon">&#9888;</div><div class="data-footer-text"><strong>Near the edge:</strong> Winston-Salem renters are barely below affordability at OEWS wages. Offers at the posted market range ($22-24/hr) would clear the rent threshold. Suburban corridors to the west (Clemmons, Lewisville) offer more affordable housing within a commutable distance.</div></div>
+        </div>
+
+        <!-- CANTON -->
+        <div class="mktab-panel" data-market="canton">
+          <div class="data-col-grid">
+            <div class="data-col" style="color:var(--canton)"><div class="data-col-label">Homeownership</div><div class="data-stat"><div class="data-stat-l">Median home value (Canton)</div><div class="data-stat-v">$107,100</div></div><div class="data-stat"><div class="data-stat-l">Mortgage threshold (30% rule)</div><div class="data-stat-v">$21.63/hr</div></div><div class="data-stat"><div class="data-stat-l">Mortgage affordability gap</div><div class="data-stat-v green">+$0.80/hr</div><div class="data-stat-sub">Only Cook US market above the line</div></div></div>
+            <div class="data-col" style="color:var(--canton)"><div class="data-col-label">Rental</div><div class="data-stat"><div class="data-stat-l">Median gross rent</div><div class="data-stat-v">$766/mo</div></div><div class="data-stat"><div class="data-stat-l">Rent threshold (30% rule)</div><div class="data-stat-v">$13.59/hr</div></div><div class="data-stat"><div class="data-stat-l">Rent affordability gap</div><div class="data-stat-v green">+$8.84/hr</div><div class="data-stat-sub">Highly affordable</div></div></div>
+            <div class="data-col" style="color:var(--canton)"><div class="data-col-label">Retention Lever</div><div class="data-stat"><div class="data-stat-l">A single production income clears homeownership</div><div class="data-stat-v green" style="font-size:14px;">Unique in Cook US</div></div><div class="data-stat"><div class="data-stat-l">Retention message</div><div class="data-stat-v" style="font-size:13px;">"Work here, own a home here"</div><div class="data-stat-sub">Quantifiable and verifiable</div></div></div>
+          </div>
+          <div class="housing-map-wrap" style="margin-top:16px;">
+            <div class="housing-map-sidebar">
+              <div class="housing-map-label">Market Geography</div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:var(--primary)"></span><div><div class="housing-map-city">Canton (Cook site)</div><div class="housing-map-dist">Fulton County seat · Primary site</div></div></div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:var(--canton)"></span><div><div class="housing-map-city">Peoria</div><div class="housing-map-dist">~30 mi northeast · Caterpillar HQ · MSA anchor</div></div></div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">East Peoria</div><div class="housing-map-dist">~32 mi northeast · Caterpillar manufacturing complex</div></div></div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">Galesburg</div><div class="housing-map-dist">~30 mi west · Knox County labor draw</div></div></div>
+              <div class="housing-map-item"><span class="housing-map-dot" style="background:#999"></span><div><div class="housing-map-city">Macomb</div><div class="housing-map-dist">~30 mi southwest · Western Illinois University</div></div></div>
+            </div>
+            <div class="housing-map-frame">
+              <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-90.55%2C40.3%2C-89.1%2C41.05&layer=mapnik&marker=40.5581%2C-90.0348" title="Canton IL and Peoria MSA Map" loading="lazy" allowfullscreen></iframe>
+              <div class="housing-map-caption">OpenStreetMap · Peoria MSA including Fulton County, IL · Cook site: Canton · Caterpillar complex: East Peoria and Mossville</div>
+            </div>
+          </div>
+          <div class="data-footer" style="border-top-color:var(--ws);margin-top:1px;"><div class="data-footer-icon">&#9733;</div><div class="data-footer-text"><strong>Anchor retention here:</strong> No competitor in any of Cook's markets can match this claim at comparable wages. "Work here, own a home here" should be deployed in every job posting, offer letter, and onboarding touchpoint. The 30-minute commute corridor to Peoria expands the labor draw area without sacrificing the affordability advantage.</div></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: COMPETITIVE INTELLIGENCE
+============================================================ -->
+<div class="page" id="pg-comp">
+  <div class="page-inner">
+    <div class="section">
+      <div class="section-label">Competitive Intelligence</div>
+      <div class="section-title">Who Cook Actually Competes Against</div>
+      <div class="ki-block">
+        <div class="ki-label">Key Competitive Insight</div>
+        <div class="ki-title">Cook's three markets face <em>three fundamentally different</em> competitive regimes, and the wrong benchmark in each one costs real headcount.</div>
+        <div class="ki-grid">
+          <div class="ki-item"><span class="ki-market">Bloomington</span><span class="ki-signal"><strong>Talent compression.</strong> Simtra's $241M expansion (+130 jobs) collides with Novo Nordisk's approximately 400 May 2026 layoffs, the same specialist pool, simultaneously pulled and released.</span></div>
+          <div class="ki-item"><span class="ki-market">Winston-Salem</span><span class="ki-signal"><strong>Wage-floor regime.</strong> Reynolds American (BAT), not OEWS medians, sets the effective wage floor. Cook offers priced at $19.08/hr lose before the interview.</span></div>
+          <div class="ki-item"><span class="ki-market">Canton</span><span class="ki-signal"><strong>Cyclical anchor.</strong> Caterpillar's UAW wages ($28 to 32/hr) define the ceiling. Cook competes on stability, not wage, and on homeownership, not growth.</span></div>
+        </div>
+      </div>
+      <div class="callout blue"><p><strong>How to read this section:</strong> Each block shows the employers who actually compete for Cook's blue-collar production workers in each specific MSA. These are the employers that appear when Cook's workers consider leaving or when candidates receive competing offers. Expand each card to reveal the full competitive analysis and sources.</p></div>
+
+      <!-- BLOOMINGTON -->
+      <div class="comp-market-block">
+        <div class="comp-market-hd" style="background:var(--bloom-lt);border-color:var(--bloom-bd);">
+          <div class="comp-market-stripe" style="background:var(--bloom)"></div>
+          <div><div class="comp-mhd-label" style="color:var(--bloom)">Bloomington, IN · Monroe + Owen Counties</div><div class="comp-mhd-name">Life Sciences Cluster: Concentrated, Competitive, and Active</div><div class="comp-mhd-desc">Bloomington is the #1 small MSA for medical device employment concentration and #2 for biopharma. Cook competes inside a deep but narrow specialist pool.</div></div>
+        </div>
+        <div class="accordion-list">
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <div class="acc-left"><div class="acc-company">Novo Nordisk <span style="font-weight:400;font-size:11.5px;color:var(--text-muted)">(fka Catalent)</span></div><div class="acc-sector">Biopharmaceutical Manufacturing</div><div class="acc-signal-short">Approximately 400 layoffs effective May 2026. Recruitment window is open now. QA analysts, production technicians, and maintenance mechanics entering the market.</div></div>
+              <div class="acc-right"><span class="badge badge-amber">Active Event</span><span class="acc-toggle">+</span></div>
+            </button>
+            <div class="acc-body"><div class="acc-body-text">These are not generic production workers. They are trained biomanufacturing professionals: sterile fill/finish operators, QA analysts, validation specialists, and maintenance mechanics. Their skills map directly onto medical device manufacturing. Cook should stand up a targeted outreach campaign before Simtra, Boston Scientific, and other area employers absorb this pool.</div><div class="comp-label">What This Means for Cook</div><div class="comp-impl">Recruitment window; act now. Stand up targeted outreach via LinkedIn InMail campaigns, local job fair presence, and direct referral incentives. Prioritize QA analysts, production technicians, and maintenance mechanics.</div><div class="comp-divider"></div><div class="comp-label">Retention Signal</div><div class="comp-impl">Novo's regulatory troubles (FDA warning letter, Jul 2025) and global restructuring signal pharma industry volatility. Cook's medical device stability is a credible counternarrative for workers who want out of the pharma cycle.</div><div class="comp-sources"><strong>Sources</strong><a href="https://www.xtalks.com/layoffs-hit-novo-nordisks-ex-catalent-site-despite-turnaround-efforts-4732/" target="_blank" rel="noopener">Xtalks / BioSpace: Novo Bloomington layoffs (Apr 2026)</a> · <a href="https://www.in.gov/dwd/warn/" target="_blank" rel="noopener">Indiana DWD WARN Act filings</a> · <a href="https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/warning-letters" target="_blank" rel="noopener">FDA Warning Letters</a></div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <div class="acc-left"><div class="acc-company">Simtra BioPharma Solutions</div><div class="acc-sector">Biopharmaceutical Manufacturing</div><div class="acc-signal-short">$241M expansion underway (+130 jobs, Aug 2025). 33 active roles on Indeed at $22 to $38/hr. Cook's most acute ongoing competitor in Bloomington.</div></div>
+              <div class="acc-right"><span class="badge badge-red">High Threat: Expanding</span><span class="acc-toggle">+</span></div>
+            </button>
+            <div class="acc-body"><div class="acc-body-text">Simtra is Cook's most acute ongoing competitor in Bloomington. They are growing, not contracting. Their production specialist and QA analyst postings run $22 to $38/hr, above Cook's likely range. 33 active roles on Indeed confirm persistent hiring activity from the same labor pool Cook draws from.</div><div class="comp-label">What This Means for Cook</div><div class="comp-impl">Simtra's expansion directly compresses the Bloomington production labor supply at exactly the moment Novo's layoffs temporarily expand it. Cook needs to move quickly on Novo's displaced workers; Simtra will be recruiting the same people simultaneously.</div><div class="comp-sources"><strong>Sources</strong><a href="https://www.idsnews.com/article/2025/08/simtra-biopharma-solutions-investment-expansion-monroe-county-jobs" target="_blank" rel="noopener">Indiana Daily Student: Simtra expansion (Aug 2025)</a> · <a href="https://www.in.gov/iedc/news-events/" target="_blank" rel="noopener">Indiana Economic Development Corp.</a></div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <div class="acc-left"><div class="acc-company">Boston Scientific</div><div class="acc-sector">Medical Device Manufacturing</div><div class="acc-signal-short">Spencer, IN facility (~15 mi). 13 active Indiana postings. Natural destination for mid-tenure Cook employees seeking a larger corporate environment.</div></div>
+              <div class="acc-right"><span class="badge badge-amber">Moderate: Active</span><span class="acc-toggle">+</span></div>
+            </button>
+            <div class="acc-body"><div class="acc-body-text">Boston Scientific's Spencer, IN facility draws from the same Monroe/Owen County labor shed as Cook Bloomington. Their 13 active Indiana postings confirm persistent recruiting activity. As a medical device peer, BSC is a natural destination for Cook workers exploring alternatives.</div><div class="comp-label">Retention Risk</div><div class="comp-impl">Career mobility risk, especially for workers who value medical device prestige and want a larger corporate environment. BSC's brand recognition may attract mid-tenure Cook employees who feel they have capped advancement potential internally.</div><div class="comp-sources"><strong>Sources</strong><a href="https://www.bostonscientific.com/en-US/careers.html" target="_blank" rel="noopener">Boston Scientific careers</a> · <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000885725&type=10-K" target="_blank" rel="noopener">BSC 10-K (SEC EDGAR)</a> · Indeed employer listings, Feb to Apr 2026</div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <div class="acc-left"><div class="acc-company">Printpack</div><div class="acc-sector">Flexible Packaging Manufacturing</div><div class="acc-signal-short">4 active local postings at $18 to $24/hr. Entry-level production; low strategic threat but contributes to wage floor pressure.</div></div>
+              <div class="acc-right"><span class="badge badge-gray">Low to Moderate</span><span class="acc-toggle">+</span></div>
+            </button>
+            <div class="acc-body"><div class="acc-body-text">Consistent presence in Bloomington production and operator searches. Competes for entry-level production workers in the $18 to $24/hr band, overlapping with Cook's Assembler range.</div><div class="comp-label">Recruitment Implication</div><div class="comp-impl">Low strategic threat but contributes to entry-level wage floor pressure. Candidates choosing between Cook and Printpack are likely new-to-market production workers where offer speed and onboarding quality matter most. Cook's mission advantage should be the differentiator.</div><div class="comp-sources"><strong>Sources</strong><a href="https://www.printpack.com/locations/" target="_blank" rel="noopener">Printpack facility network</a> · Indeed Bloomington postings, Feb to Apr 2026</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WINSTON-SALEM -->
+      <div class="comp-market-block">
+        <div class="comp-market-hd" style="background:var(--ws-lt);border-color:var(--ws-bd);">
+          <div class="comp-market-stripe" style="background:var(--ws)"></div>
+          <div><div class="comp-mhd-label" style="color:var(--ws)">Winston-Salem, NC · 5-County MSA</div><div class="comp-mhd-name">Industrial Heritage Market: Fragmented, Differentiation-Driven</div><div class="comp-mhd-desc">Winston-Salem's blue-collar labor market is shaped by legacy manufacturers (tobacco, apparel) and growing precision manufacturing. Reynolds American sets the effective wage floor.</div></div>
+        </div>
+        <div class="accordion-list">
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <div class="acc-left"><div class="acc-company">Reynolds American (BAT)</div><div class="acc-sector">Tobacco Manufacturing</div><div class="acc-signal-short">2,500 Forsyth County employees. Fortune 500 subsidiary. Sets the practical wage floor for all blue-collar production workers in the Winston-Salem MSA.</div></div>
+              <div class="acc-right"><span class="badge badge-red">High: Sets Wage Floor</span><span class="acc-toggle">+</span></div>
+            </button>
+            <div class="acc-body"><div class="acc-body-text">Reynolds American is the single largest manufacturing employer in Forsyth County. As a BAT subsidiary, it offers compensation and benefits that set the practical wage ceiling for blue-collar production workers in the Winston-Salem MSA.</div><div class="comp-label">What This Means for Cook</div><div class="comp-impl">Critical benchmark: Cook's wage strategy in Winston-Salem must be benchmarked against Reynolds American, not just OEWS medians. The $20.08/hr production median understates what experienced production workers expect based on what they see Reynolds paying their peers.</div><div class="comp-sources"><strong>Sources</strong><a href="https://www.winstonsalem.com/economic-development/local-data/major-employers/" target="_blank" rel="noopener">Greater Winston-Salem, Inc.: Major Employers</a> · <a href="https://www.bat.com/annualreport" target="_blank" rel="noopener">BAT PLC Annual Report</a> · <a href="https://wstoday.6amcity.com/city-guide/work/top-industries-employers-winston-salem-nc" target="_blank" rel="noopener">WStoday: top WS employers (2025)</a></div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <div class="acc-left"><div class="acc-company">Hanesbrands / Gildan</div><div class="acc-sector">Apparel Manufacturing (Acquired)</div><div class="acc-signal-short">Approximately 2,400 WS employees. Gildan acquisition closed Dec 2025. Post-acquisition restructuring is likely; dislodged workers have directly transferable dexterous manufacturing skills.</div></div>
+              <div class="acc-right"><span class="badge badge-amber">Monitor: Acquisition Active</span><span class="acc-toggle">+</span></div>
+            </button>
+            <div class="acc-body"><div class="acc-body-text">Hanesbrands was acquired by Gildan (Dec 2025). Post-acquisition workforce restructuring is likely as Gildan consolidates operations. Assembly, packaging, and sewing workers at Hanesbrands have directly relevant dexterous manufacturing skills for medical device work.</div><div class="comp-label">Emerging Opportunity</div><div class="comp-impl">If Gildan restructures local operations, Cook has an opportunity to recruit dislodged Hanesbrands assembly and packaging workers. These workers have stable employment histories and precision hand-assembly experience. Monitor closely through mid-2026. Any Gildan restructuring announcement is a recruitment trigger.</div><div class="comp-sources"><strong>Sources</strong><a href="https://gildancorp.com/en/media/press-releases/" target="_blank" rel="noopener">Gildan: acquisition press release (2024)</a> · <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0001359841&type=8-K" target="_blank" rel="noopener">HanesBrands 8-K (SEC EDGAR)</a> · <a href="https://www.winstonsalem.com/economic-development/local-data/major-employers/" target="_blank" rel="noopener">Greater Winston-Salem employer list</a></div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <div class="acc-left"><div class="acc-company">Collins Aerospace (RTX)</div><div class="acc-sector">Aerospace Manufacturing</div><div class="acc-signal-short">Major Forsyth County employer at $22 to $35/hr skilled production. Likely explains why posted assembler wages exceed OEWS median by $3 to $5.</div></div>
+              <div class="acc-right"><span class="badge badge-red">High: Skilled Roles</span><span class="acc-toggle">+</span></div>
+            </button>
+            <div class="acc-body"><div class="acc-body-text">Collins Aerospace (RTX subsidiary) competes for the same skilled production workers Cook needs most: machinists, QA inspectors, maintenance mechanics, and precision operators.</div><div class="comp-label">Why Posted Wages Are Above OEWS Median</div><div class="comp-impl">Collins Aerospace is the likely explanation for Winston-Salem's assembler posted range of $22 to $24/hr vs. the OEWS median of $19.08/hr. Cook should set pay offers at or above the posted range, not at the OEWS benchmark. Pricing at OEWS loses skilled candidates to Collins before the offer stage.</div><div class="comp-sources"><strong>Sources</strong><a href="https://www.rtx.com/news" target="_blank" rel="noopener">RTX newsroom</a> · <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000101829&type=10-K" target="_blank" rel="noopener">RTX 10-K (SEC EDGAR)</a> · <a href="https://www.winstonsalem.com/economic-development/local-data/major-employers/" target="_blank" rel="noopener">Greater Winston-Salem employer list</a></div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <div class="acc-left"><div class="acc-company">Eli Lilly: NC Facilities</div><div class="acc-sector">Pharmaceutical Manufacturing</div><div class="acc-signal-short">Concord (80 mi) and Durham (90 mi). Not a local competitor but Lilly's $70k+ average pay has reshaped statewide NC pharma manufacturing wage expectations.</div></div>
+              <div class="acc-right"><span class="badge badge-blue">Regional Signal</span><span class="acc-toggle">+</span></div>
+            </button>
+            <div class="acc-body"><div class="acc-body-text">Important clarification: Lilly is not a direct Winston-Salem MSA competitor for hourly production workers. However, Lilly's $70k+ average pay has reshaped statewide pharma manufacturing wage expectations across North Carolina.</div><div class="comp-label">What This Means for Cook</div><div class="comp-impl">NC production workers increasingly compare themselves to statewide pharma benchmarks, not just local wages. This perception gap should be addressed in compensation communications. When workers say "Lilly pays more," Cook's response should acknowledge the regional context while explaining the medical device career advantage.</div><div class="comp-sources"><strong>Sources</strong><a href="https://investor.lilly.com/news-releases" target="_blank" rel="noopener">Eli Lilly investor news: Concord NC expansion (2023)</a> · <a href="https://www.bls.gov/oes/current/oes_nc.htm" target="_blank" rel="noopener">BLS OEWS: NC pharma manufacturing</a></div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <div class="acc-left"><div class="acc-company">Smurfit Westrock</div><div class="acc-sector">Packaging / Paper Manufacturing</div><div class="acc-signal-short">7 active local postings at $15 to $24/hr. Largest volume competitor for general production and warehouse labor in the Winston-Salem market.</div></div>
+              <div class="acc-right"><span class="badge badge-gray">Low to Moderate</span><span class="acc-toggle">+</span></div>
+            </button>
+            <div class="acc-body"><div class="acc-body-text">High posting volume in Winston-Salem production and forklift searches. Largest volume competitor for general production and warehouse labor in the market.</div><div class="comp-label">Recruitment Implication</div><div class="comp-impl">Cook's differentiation against Smurfit Westrock should be the medical device career track and Cook's mission-driven positioning. Entry-level candidates choosing between Cook and Smurfit are evaluating stability versus volume; Cook wins on long-term trajectory and purpose of work.</div><div class="comp-sources"><strong>Sources</strong><a href="https://www.smurfitwestrock.com/" target="_blank" rel="noopener">Smurfit Westrock: merger close (Jul 2024)</a> · Indeed Winston-Salem postings, Feb to Apr 2026</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CANTON -->
+      <div class="comp-market-block">
+        <div class="comp-market-hd" style="background:var(--canton-lt);border-color:var(--canton-bd);">
+          <div class="comp-market-stripe" style="background:var(--canton)"></div>
+          <div><div class="comp-mhd-label" style="color:var(--canton)">Peoria / Canton, IL · Fulton County</div><div class="comp-mhd-name">Caterpillar Country: Wage Expectations Set by UAW, Pool Defined by CAT Cycles</div><div class="comp-mhd-desc">Caterpillar's East Peoria complex defines what blue-collar manufacturing wages look like in this MSA. Cook competes against a UAW-calibrated wage expectation that exceeds its likely pay range.</div></div>
+        </div>
+        <div class="accordion-list">
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <div class="acc-left"><div class="acc-company">Caterpillar Inc.</div><div class="acc-sector">Heavy Equipment Manufacturing</div><div class="acc-signal-short">Approximately 10,000 Peoria area workers. $25 to $45/hr UAW-represented. 123 active postings. Defines the Peoria labor market and all wage expectations.</div></div>
+              <div class="acc-right"><span class="badge badge-red">High: Wage Benchmark</span><span class="acc-toggle">+</span></div>
+            </button>
+            <div class="acc-body"><div class="acc-body-text">Caterpillar's East Peoria and Mossville operations define the Peoria labor market. UAW-represented production workers earn $25 to $45/hr with industry-leading benefits. The CAT brand and wage scale shapes what every production worker in the region considers baseline manufacturing compensation.</div><div class="comp-label">Recruitment Opportunity (Cyclical)</div><div class="comp-impl">CAT layoff cycles periodically release highly skilled machinists, operators, and maintenance workers. Cook should focus on workers who want off the CAT cycle permanently, not those waiting for a recall. The screening question: "Are you looking for stable non-cyclical work?" filters for the right candidates.</div><div class="comp-divider"></div><div class="comp-label">Retention Risk</div><div class="comp-impl">Any Cook Canton worker with prior CAT experience is a CAT recall risk. Medical device mission, stability narrative, and non-cyclical employment are the key differentiators. When CAT is actively hiring, Cook should expect elevated retention pressure from workers who view Cook as a bridge back to CAT wages.</div><div class="comp-sources"><strong>Sources</strong><a href="https://www.caterpillar.com/en/news.html" target="_blank" rel="noopener">Caterpillar newsroom</a> · <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000018230&type=10-K" target="_blank" rel="noopener">Caterpillar 10-K (SEC EDGAR)</a> · <a href="https://uaw974.org/" target="_blank" rel="noopener">UAW Local 974: CAT bargaining unit</a> · <a href="https://fultoncountyil.gov/economic-development/employment-workforce-statistics/" target="_blank" rel="noopener">Fulton County IL workforce statistics</a></div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <div class="acc-left"><div class="acc-company">Illinois Tool Works (ITW)</div><div class="acc-sector">Multi-Industry Manufacturing</div><div class="acc-signal-short">Peoria area presence at $20 to $32/hr. Stable, non-cyclical employer. Closest peer competitor to Cook in the Canton market.</div></div>
+              <div class="acc-right"><span class="badge badge-amber">Moderate</span><span class="acc-toggle">+</span></div>
+            </button>
+            <div class="acc-body"><div class="acc-body-text">ITW's diversified Peoria-area operations produce industrial and specialty products with precision manufacturing requirements similar to medical device work.</div><div class="comp-label">What This Means for Cook</div><div class="comp-impl">Mid-tier threat for skilled and experienced workers. ITW is a stable non-cyclical employer, the same value proposition Cook offers, which makes it a closer peer competitor than Caterpillar. Workers who have already decided they do not want to return to CAT may compare Cook directly against ITW on compensation and advancement.</div><div class="comp-sources"><strong>Sources</strong><a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0000049826&type=10-K" target="_blank" rel="noopener">Illinois Tool Works 10-K (SEC EDGAR)</a> · <a href="https://www.itw.com/newsroom/" target="_blank" rel="noopener">ITW newsroom</a> · Indeed Peoria listings, Feb to Apr 2026</div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <div class="acc-left"><div class="acc-company">Graham Health System</div><div class="acc-sector">Healthcare</div><div class="acc-signal-short">750 Canton employees: #1 local employer, more than 4x Cook's local headcount. The most likely destination for a Cook worker who leaves but wants to stay in Canton.</div></div>
+              <div class="acc-right"><span class="badge badge-amber">Local Market Anchor</span><span class="acc-toggle">+</span></div>
+            </button>
+            <div class="acc-body"><div class="acc-body-text">Graham Health System is Canton's largest employer with more than 4x Cook's local headcount (approximately 185 employees). As the dominant Canton institution, Graham has deep community ties and brand recognition that Cook cannot match within the city.</div><div class="comp-label">What This Means for Cook</div><div class="comp-impl">For Canton-rooted workers, Graham is the most likely alternative if they leave Cook but want to stay local. Cook's retention strategy in Canton must emphasize manufacturing career advancement, the mission of medical device work, and the homeownership wage gap story. Workers who choose Cook over Graham are often prioritizing the manufacturing identity and production-level wages over service-sector stability.</div><div class="comp-sources"><strong>Sources</strong><a href="https://fultoncountyil.gov/economic-development/employment-workforce-statistics/" target="_blank" rel="noopener">Fulton County IL: largest employers</a> · <a href="https://www.grahamhospital.org/" target="_blank" rel="noopener">Graham Health System</a></div></div>
+          </div>
+          <div class="acc-item">
+            <button class="acc-header" onclick="toggleAcc(this)">
+              <div class="acc-left"><div class="acc-company">Maui Jim</div><div class="acc-sector">Optical / Consumer Products Manufacturing</div><div class="acc-signal-short">5 active Peoria postings at $19 to $28/hr. Requires the same precision inspection and fine-motor dexterity as medical device QA work. Niche but real threat for Cook's QA workforce.</div></div>
+              <div class="acc-right"><span class="badge badge-amber">Moderate: QA Roles</span><span class="acc-toggle">+</span></div>
+            </button>
+            <div class="acc-body"><div class="acc-body-text">Maui Jim's Peoria optical manufacturing facility requires the same precision inspection and fine-motor dexterity as medical device QA work. The consumer brand association and lower-regulatory-burden environment are potential draws for Cook QA personnel.</div><div class="comp-label">Retention Risk</div><div class="comp-impl">Niche but real risk for Cook's QA workforce specifically. Maui Jim's consumer brand and lower-pressure quality environment may appeal to workers experiencing audit fatigue or regulatory burnout in the medical device context. Cook should monitor Maui Jim posting activity as a leading indicator of QA retention pressure.</div><div class="comp-sources"><strong>Sources</strong><a href="https://careers.mauijim.com/" target="_blank" rel="noopener">Maui Jim careers: Peoria facility</a> · <a href="https://www.mauijim.com/us/en_US/history" target="_blank" rel="noopener">Maui Jim: company history</a> · Indeed Peoria optical postings, Feb to Apr 2026</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: STRATEGIC PLANNING
+============================================================ -->
+<div class="page" id="pg-strategy">
+  <div class="page-inner">
+    <div class="section">
+      <div class="section-label">Recommended Workforce Strategy</div>
+      <div class="section-title">One position per market. No hedging.</div>
+      <div class="section-sub" style="margin-bottom:20px;">The scorecard produces three distinct decisions. Each market requires a different posture, not a different volume of the same playbook.</div>
+      <div class="strategy-grid">
+        <div class="strat-card bloom"><span class="strat-verb">Directive 01 · Retain</span><div class="strat-market">Bloomington, IN</div><h3 class="strat-headline">Shift from hiring to retention.</h3><p class="strat-body">Invest in <strong>wage competitiveness</strong> and <strong>internal mobility</strong>. Simtra is expanding into the same specialist pool, mortgage affordability is structurally negative, and mobility is already high (21.8%). Every Cook worker lost here is replaced at Simtra's wage floor, not Cook's.</p><span class="strat-tag"><span class="strat-tag-dot" style="background:#fca5a5"></span>Stabilize and Retain</span></div>
+        <div class="strat-card ws"><span class="strat-verb">Directive 02 · Expand</span><div class="strat-market">Winston-Salem, NC</div><h3 class="strat-headline">Primary expansion candidate.</h3><p class="strat-body">Leverage <strong>available labor</strong> with <strong>targeted recruitment pipelines</strong>. 22,950 production workers, only 12 active assembler postings, +7.4% population growth. The constraint here is Reynolds American's wage floor, not supply. Price at posted range, not OEWS median, and capacity follows.</p><span class="strat-tag"><span class="strat-tag-dot" style="background:#86efac"></span>Expand Selectively</span></div>
+        <div class="strat-card canton"><span class="strat-verb">Directive 03 · Preserve</span><div class="strat-market">Canton / Peoria, IL</div><h3 class="strat-headline">Avoid major expansion. Maintain with cost discipline.</h3><p class="strat-body">The only positive mortgage gap in Cook's US footprint is a genuine retention asset, but the 11.5% population decline means this labor pool will not replenish. Preserve operations, lead with the homeownership story, and resist treating Canton as a growth market simply because costs are lower.</p><span class="strat-tag"><span class="strat-tag-dot" style="background:#fcd34d"></span>Monitor / Preserve</span></div>
+      </div>
+    </div>
+    <div class="section">
+      <div class="section-label">Recommendations for the CFO</div>
+      <div class="section-title">Six moves, ranked by time-to-act.</div>
+      <div class="section-sub" style="margin-bottom:20px;">Numbered in order of urgency. The Bloomington recommendations compress into weeks; Canton retention is multi-year. Each is framed to answer: what would a CFO need to greenlight this?</div>
+      <div class="recs-grid">
+        <div class="rec bloom"><div class="rec-num">01</div><span class="rec-mkt" style="color:var(--bloom);background:var(--bloom-lt);border:1px solid var(--bloom-bd);">Bloomington · Immediate</span><h3>Activate a Novo Nordisk recruitment campaign now</h3><p>Approximately 400 skilled biomanufacturing workers enter the market in May 2026. Simtra BioPharma is expanding and will recruit from the same pool. Cook has a narrow window. Stand up targeted outreach: LinkedIn InMail campaigns, local job fair presence, direct referral incentives. Prioritize QA analysts, production technicians, and maintenance mechanics.</p><div class="rec-action">Time to act: weeks, not months</div></div>
+        <div class="rec bloom"><div class="rec-num">02</div><span class="rec-mkt" style="color:var(--bloom);background:var(--bloom-lt);border:1px solid var(--bloom-bd);">Bloomington · Retention</span><h3>Address the -$8.31/hr mortgage gap with targeted housing assistance</h3><p>Bloomington city workers cannot buy a home at the median production wage. Ellettsville and Spencer have materially better affordability (+$4.98/hr and +$6.98/hr rent gaps respectively). Consider housing assistance programs, down payment support, or employer-assisted mortgage initiatives.</p><div class="rec-action">Frame as retention ROI, not a benefit cost</div></div>
+        <div class="rec ws"><div class="rec-num">03</div><span class="rec-mkt" style="color:var(--ws);background:var(--ws-lt);border:1px solid var(--ws-bd);">Winston-Salem · Wages</span><h3>Benchmark against Reynolds American, not OEWS medians</h3><p>Reynolds American (2,500 Forsyth Co. employees, BAT benefits) sets the effective wage floor. Cook's offers priced at OEWS median ($19.08/hr assembler) will consistently lose candidates. The assembler posted range is already $22 to $24/hr, $3 to $5 above OEWS. Price offers at or above the posted market.</p><div class="rec-action">Compensate at posted range, not OEWS benchmark</div></div>
+        <div class="rec ws"><div class="rec-num">04</div><span class="rec-mkt" style="color:var(--ws);background:var(--ws-lt);border:1px solid var(--ws-bd);">Winston-Salem · Opportunity</span><h3>Monitor Hanesbrands/Gildan for displacement events</h3><p>Gildan's December 2025 acquisition of Hanesbrands (2,400 WS employees) creates workforce uncertainty. Post-acquisition restructuring is common. Hanesbrands assembly and packaging workers have directly transferable dexterous manufacturing skills. Establish a monitoring cadence; any Gildan restructuring announcement is a recruitment trigger.</p><div class="rec-action">Set up monitoring for Hanesbrands layoff news</div></div>
+        <div class="rec canton"><div class="rec-num">05</div><span class="rec-mkt" style="color:var(--canton);background:var(--canton-lt);border:1px solid var(--canton-bd);">Canton · Retention</span><h3>Lead with the homeownership story; it is Cook's most unique retention asset</h3><p>Canton is the only Cook US location where production wages clear the homeownership threshold. No competitor in any of Cook's markets can make this claim at comparable wages. This should be the centerpiece of Canton retention materials, recruitment ads, and manager talking points.</p><div class="rec-action">Deploy in job postings, offer letters, and onboarding</div></div>
+        <div class="rec canton"><div class="rec-num">06</div><span class="rec-mkt" style="color:var(--canton);background:var(--canton-lt);border:1px solid var(--canton-bd);">Canton · Long-Horizon</span><h3>Build for retention depth, not hiring volume; the pool is contracting</h3><p>Canton's population has declined 11.5% since 2015. The labor pool will not replenish. Any Cook worker who leaves Canton is harder to replace than five years ago. Prioritize CAT workers who have permanently left the CAT cycle, not those between recall cycles.</p><div class="rec-action">Identify "permanently off the CAT cycle" in screening</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: POWER BI
+============================================================ -->
+<div class="page" id="pg-dashboard">
+  <div class="page-inner">
+    <div class="section">
+      <div class="section-label">Interactive Workforce Diagnostics</div>
+      <div class="section-title">Verify each claim. Stress-test each directive.</div>
+      <div class="section-sub" style="margin-bottom:20px;">Drill into labor availability, wage pressure, and competitive intensity by market. Every figure in the scorecard and every directive above is sourced in the five-page Power BI report below, filtered by MSA and production occupation, and updated against BLS OEWS, ACS, and live Indeed postings.</div>
+      <div class="card" style="padding:0;">
+        <div style="padding:18px 22px;border-bottom:1px solid var(--border);"><div class="card-title">Master Workforce Intelligence Dashboard</div><div class="card-sub">Five-page Power BI report: Market Scorecard · Labor Supply and Demographics · Wage and Demand · Housing Affordability · Competitive Intelligence</div></div>
+        <div class="embed-wrap" style="border:none;">
+          <div class="embed-ratio">
+            <!-- Uncomment and replace URL to activate: -->
+            <!-- <iframe id="pbiFrame" title="cook_workforce_master" src="[MASTER_POWERBI_EMBED_URL]" frameborder="0" allow="fullscreen" allowfullscreen loading="lazy" style="position:absolute;inset:0;width:100%;height:100%;border:0;"></iframe> -->
+            <div class="embed-ph"><div class="embed-ph-icon">&#x1F4CA;</div><h3>Master Power BI Dashboard</h3><p>Paste the published embed URL into the iframe <code>src</code> attribute above. All five pages will render inline once published.</p></div>
+          </div>
+          <div class="embed-bar"><span class="embed-label">Master report · 5 pages · All three MSAs · Market and Occupation slicers</span><div class="embed-actions"><button class="btn-ghost" onclick="alert('To fullscreen, publish the Power BI embed URL first.')">Fullscreen</button><a class="btn-primary" href="#" style="display:inline-flex;align-items:center;text-decoration:none;">Open in new tab</a></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: DATA SOURCES
+============================================================ -->
+<div class="page" id="pg-sources">
+  <div class="page-inner">
+    <div class="section">
+      <div class="section-label">Reference</div>
+      <div class="section-title">Data Sources and Document Information</div>
+      <div class="sources-grid">
+        <div class="sources-list">
+          <div class="src-subhead">Primary Labor and Demographic Data</div>
+          <ol><li><a href="https://www.bls.gov/oes/" target="_blank" rel="noopener">BLS OEWS: Occupational Employment and Wage Statistics, May 2024</a></li><li><a href="https://www.bls.gov/cew/" target="_blank" rel="noopener">BLS QCEW: Quarterly Census of Employment and Wages (industry and employer detail)</a></li><li><a href="https://fred.stlouisfed.org" target="_blank" rel="noopener">FRED / BLS: MSA unemployment series, 2015 to Sep 2025</a></li><li><a href="https://www.census.gov/programs-surveys/acs" target="_blank" rel="noopener">U.S. Census Bureau: ACS 2024 1-Year Estimates (demographics)</a></li><li><a href="https://www.census.gov/quickfacts/" target="_blank" rel="noopener">Census QuickFacts: ACS 2020 to 2024 housing estimates</a></li><li><a href="https://www.nar.realtor/research-and-statistics/housing-statistics/housing-affordability-index" target="_blank" rel="noopener">NAR: Housing Affordability Index (methodology)</a></li><li>Job postings snapshot: manual multi-board (Indeed, LinkedIn, ZipRecruiter, Glassdoor), Feb to Apr 2026, 20-mi radius, 30-day window</li></ol>
+          <div class="src-subhead">Competitive Intelligence: Corporate and Regulatory Filings</div>
+          <ol start="8"><li><a href="https://www.sec.gov/edgar/searchedgar/companysearch" target="_blank" rel="noopener">SEC EDGAR: 10-K and 8-K filings for all publicly-traded competitors named</a></li><li><a href="https://www.fda.gov/inspections-compliance-enforcement-and-criminal-investigations/warning-letters" target="_blank" rel="noopener">FDA Warning Letters: Novo Nordisk Bloomington (Jul 2025)</a></li><li><a href="https://www.in.gov/dwd/warn/" target="_blank" rel="noopener">Indiana DWD: WARN Act layoff notifications</a></li><li><a href="https://www.dol.gov/agencies/eta/layoffs/warn" target="_blank" rel="noopener">U.S. DOL: WARN Act public filings (cross-state)</a></li><li><a href="https://www.bat.com/annualreport" target="_blank" rel="noopener">BAT PLC Annual Report: Reynolds American subsidiary disclosures</a></li><li><a href="https://gildancorp.com/en/media/press-releases/" target="_blank" rel="noopener">Gildan Activewear: HanesBrands acquisition press releases</a></li><li><a href="https://www.rtx.com/news" target="_blank" rel="noopener">RTX newsroom: Collins Aerospace disclosures</a></li><li><a href="https://www.caterpillar.com/en/news.html" target="_blank" rel="noopener">Caterpillar Inc. newsroom and investor relations</a></li><li><a href="https://uaw974.org/" target="_blank" rel="noopener">UAW Local 974: Caterpillar bargaining unit</a></li><li><a href="https://investor.lilly.com/news-releases" target="_blank" rel="noopener">Eli Lilly investor news: Concord and Durham NC expansions</a></li></ol>
+          <div class="src-subhead">Regional Economic Development and News</div>
+          <ol start="18"><li><a href="https://xtalks.com/layoffs-hit-novo-nordisks-ex-catalent-site-despite-turnaround-efforts-4732/" target="_blank" rel="noopener">Xtalks / BioSpace: Novo Nordisk Bloomington layoff coverage (Apr 2026)</a></li><li><a href="https://www.idsnews.com/article/2025/08/simtra-biopharma-solutions-investment-expansion-monroe-county-jobs" target="_blank" rel="noopener">Indiana Daily Student: Simtra BioPharma $241M expansion (Aug 2025)</a></li><li><a href="https://www.in.gov/iedc/news-events/" target="_blank" rel="noopener">Indiana Economic Development Corporation: incentive announcements</a></li><li><a href="https://inuplands.org/industries/life-sciences/" target="_blank" rel="noopener">Indiana Uplands: Life Sciences cluster profile</a></li><li><a href="https://www.winstonsalem.com/economic-development/local-data/major-employers/" target="_blank" rel="noopener">Greater Winston-Salem, Inc.: Major Employer list (2025)</a></li><li><a href="https://wstoday.6amcity.com/city-guide/work/top-industries-employers-winston-salem-nc" target="_blank" rel="noopener">WStoday / 6amCity: top industries and employers, Winston-Salem (2025)</a></li><li><a href="https://fultoncountyil.gov/economic-development/employment-workforce-statistics/" target="_blank" rel="noopener">Fulton County IL: Employment and Workforce Statistics</a></li><li><a href="https://greaterpeoriaedc.org/" target="_blank" rel="noopener">Greater Peoria EDC: regional employment and sector data</a></li></ol>
+          <p style="font-size:11px;color:var(--text-subtle);margin-top:14px;line-height:1.6;">Corporate headcounts for named competitors triangulated across three independent sources. All figures cited are the most conservative estimate from the range where sources disagreed.</p>
+        </div>
+        <div>
+          <div class="card"><div class="card-title" style="margin-bottom:14px;">Document Information</div><div class="di"><strong>Version:</strong> 2.0</div><div class="di"><strong>Markets:</strong> Bloomington IN, Winston-Salem NC, Peoria / Canton IL</div><div class="di"><strong>Prepared for:</strong> Stephanie L.</div><div class="di"><strong>Date:</strong> April 2026</div><div class="di" style="margin-top:12px;"><strong>Competitor fact table:</strong> Fact_CompetitorPostings_v2.xlsx · 14 rows · 3 markets · 10 named competitors</div><div class="di" style="margin-top:12px;"><strong>Power BI:</strong> Replace [MASTER_POWERBI_EMBED_URL] with published embed link in the Dashboard page.</div></div>
+          <div class="card" style="margin-top:16px;"><div class="card-title" style="margin-bottom:12px;">Individual Market Reports</div>
+            <div style="display:flex;flex-direction:column;gap:1px;background:var(--border);">
+              <a href="https://edwardbkim.github.io/bacw_bloomington_msa/" target="_blank" style="display:flex;align-items:center;gap:10px;padding:11px 14px;text-decoration:none;color:var(--text);background:var(--surface);transition:background .12s;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='var(--surface)'"><span style="width:7px;height:7px;border-radius:50%;background:var(--bloom);flex-shrink:0;"></span><span style="font-size:12.5px;flex:1;">Bloomington, IN Full Report</span><span style="font-size:11px;color:var(--primary);font-weight:700;">View</span></a>
+              <a href="https://edwardbkim.github.io/bacw_cook_winstonsalem/" target="_blank" style="display:flex;align-items:center;gap:10px;padding:11px 14px;text-decoration:none;color:var(--text);background:var(--surface);transition:background .12s;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='var(--surface)'"><span style="width:7px;height:7px;border-radius:50%;background:var(--ws);flex-shrink:0;"></span><span style="font-size:12.5px;flex:1;">Winston-Salem, NC Full Report</span><span style="font-size:11px;color:var(--primary);font-weight:700;">View</span></a>
+              <a href="https://edwardbkim.github.io/bacw_cook_canton/" target="_blank" style="display:flex;align-items:center;gap:10px;padding:11px 14px;text-decoration:none;color:var(--text);background:var(--surface);transition:background .12s;" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='var(--surface)'"><span style="width:7px;height:7px;border-radius:50%;background:var(--canton);flex-shrink:0;"></span><span style="font-size:12.5px;flex:1;">Canton / Peoria, IL Full Report</span><span style="font-size:11px;color:var(--primary);font-weight:700;">View</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<script>
+(function(){
+
+/* ---- PAGE NAVIGATION ---- */
+const PAGE_TITLES = {
+  'pg-summary': 'Executive Summary',
+  'pg-scorecard': 'Market Scorecard',
+  'pg-supply': 'Workforce Supply',
+  'pg-demand': 'Demand Analytics',
+  'pg-housing': 'Housing Affordability',
+  'pg-comp': 'Competitive Intelligence',
+  'pg-strategy': 'Strategic Planning',
+  'pg-dashboard': 'Power BI Dashboard',
+  'pg-sources': 'Data Sources'
+};
+
+window.showPage = function(pageId, navEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const pg = document.getElementById(pageId);
+  if (pg) { pg.classList.add('active'); pg.scrollTop = 0; }
+  document.querySelector('.content').scrollTop = 0;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (navEl) navEl.classList.add('active');
+  else { const el = document.querySelector('[data-page="'+pageId+'"]'); if (el) el.classList.add('active'); }
+  document.getElementById('topbar-title').textContent = PAGE_TITLES[pageId] || '';
+  if (window.innerWidth <= 768) closeSidebar();
+};
+
+/* ---- MOBILE SIDEBAR ---- */
+window.toggleSidebar = function() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('open');
+};
+window.closeSidebar = function() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+};
+
+/* ---- ACCORDION ---- */
+window.toggleAcc = function(headerBtn) {
+  headerBtn.closest('.acc-item').classList.toggle('open');
+};
+
+/* ---- SCORECARD FILTER ---- */
+window.filterScorecard = function(market, btn) {
+  document.getElementById('main-scorecard').className = 'scorecard' + (market !== 'all' ? ' filter-' + market : '');
+  document.querySelectorAll('.sc-filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+};
+
+/* ---- MARKET TABS ---- */
+window.switchTab = function(containerId, market, btn) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.querySelectorAll('.mktab-panel').forEach(p => p.classList.toggle('active', p.dataset.market === market));
+  const tabGroup = btn.closest('.mktabs');
+  if (tabGroup) tabGroup.querySelectorAll('.mktab').forEach(t => t.classList.toggle('active', t === btn));
+};
+
+/* ---- ARCHIVE ---- */
+window.archiveReport = function() {
+  document.getElementById('archiveModal').classList.add('open');
+};
+window.closeModal = function(id) {
+  document.getElementById(id).classList.remove('open');
+};
+document.getElementById('archiveModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal('archiveModal');
+});
+
+/* ---- EXPORT DATA (CSV) ---- */
+window.exportData = function() {
+  const rows = [
+    ['Cook Medical Workforce Intelligence — Market Scorecard', 'April 2026', '', ''],
+    ['', '', '', ''],
+    ['KPI', 'Bloomington IN', 'Winston-Salem NC', 'Canton / Peoria IL'],
+    ['Unemployment (12-mo avg)', '3.56%', '3.69%', '4.48%'],
+    ['Production workforce depth', '7020', '22950', '14810'],
+    ['Rent affordability gap ($/hr)', '-1.66', '-0.82', '+8.84'],
+    ['Mortgage affordability gap ($/hr)', '-8.31', '-7.98', '+0.80'],
+    ['Production median wage ($/hr)', '21.42', '20.08', '23.57'],
+    ['Assembler median wage ($/hr)', '17.69', '19.08', '22.43'],
+    ['QA/Inspection median wage ($/hr)', '28.95', '21.33', '26.20'],
+    ['Maintenance median wage ($/hr)', '31.20', '28.80', 'N/A'],
+    ['Population trend (10-yr)', '+0.4%', '+7.4%', '-11.5%'],
+    ['Dominant competitor', 'Simtra (Expanding)', 'Reynolds Am. (Wage floor)', 'Caterpillar (UAW wages)'],
+    ['Assembler LQ (natl avg = 1.0)', '3.97', '1.50', '1.92'],
+    ['Active assembler postings (30-day)', '27', '12', '8'],
+    ['Assembler posted range ($/hr)', '$20-28', '$22-24', '$20-42'],
+    ['Median age (workforce)', '32.6', '41.1', '40.7'],
+    ['Geographic mobility', '21.8%', '11.3%', '9.7%'],
+    ['Median home value', '$321400', '$233800', '$107100'],
+    ['Median gross rent ($/mo)', '1200', '1087', '766'],
+    ['Recommended action', 'Stabilize and Retain', 'Expand Selectively', 'Monitor / Preserve'],
+    ['', '', '', ''],
+    ['Source: BLS OEWS May 2024 | ACS 2024 | Indeed postings Feb-Apr 2026', '', '', ''],
+    ['Competitor Research: April 2026', '', '', '']
+  ];
+  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'cook_workforce_scorecard_april2026.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('Scorecard exported as CSV');
+};
+
+/* ---- TOAST ---- */
+window.showToast = function(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+};
+
+/* ---- INIT ---- */
+showPage('pg-summary', document.querySelector('[data-page="pg-summary"]'));
+
+})();
+</script>
+</body>
+</html>
